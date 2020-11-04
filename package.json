@@ -39,7 +39,7 @@
     "cross-env": "^7.0.2",
     "git-scripts": "0.2.1",
     "husky": "^4.3.0",
-    "surge": "latest" 
+    "surge": "latest"
   },
   "husky": {
     "hooks": {
