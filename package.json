@@ -36,12 +36,14 @@
     ]
   },
   "devDependencies": {
-    "surge": "latest",
-    "git-scripts": "0.2.1"
+    "cross-env": "^7.0.2",
+    "git-scripts": "0.2.1",
+    "husky": "^4.3.0",
+    "surge": "latest"
   },
-  "git": {
-    "scripts": {
-      "pre-push": "surge --project build --domain ws.hexaone.fr"
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run build && surge --project build --domain ws.hexaone.fr"
     }
   }
 }
