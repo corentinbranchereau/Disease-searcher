@@ -13,7 +13,7 @@ class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
-            The Disease Searcher, by HexaOne 
+            The Disease Searcher, by the HexaOne Team
           </p>
         </header>
       </div>
