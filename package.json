@@ -43,8 +43,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit":"npm run build",
-      "pre-push": " surge --project build --domain ws.hexaone.fr"
+      "pre-push": "npm run build && surge --project build --domain ws.hexaone.fr"
     }
   }
 }
