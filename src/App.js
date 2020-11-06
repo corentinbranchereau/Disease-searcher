@@ -1,7 +1,17 @@
-import React, { Component, Suspense, lazy } from 'react';
+import React, { Component } from 'react';
+import {
+	BrowserRouter as Router,
+	Route,
+	Redirect,
+	Switch
+} 
+from 'react-router-dom';
 
-import logo from './logo.svg';
+
 import './App.css';
+import Search from './Search/Search';
+import Disease from './Disease/Disease';
+import Virus from './Virus/Virus';
 
 
 class App extends Component {
@@ -9,14 +19,16 @@ class App extends Component {
 
   render(){
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            The Disease Searcher, by the HexaOne Team
-          </p>
-        </header>
-      </div>
+      <Router>
+				 <Switch>
+					{/* Front Pages */}
+					<Route path="/" component={ Search } exact />
+					<Route path="/virus/:virusName" component={ Virus } exact />
+          			<Route path="/disease/:diseaseName" component={ Disease } exact />
+
+					<Redirect to="/" />
+				 </Switch>
+	</Router>
     );
   }
 }
