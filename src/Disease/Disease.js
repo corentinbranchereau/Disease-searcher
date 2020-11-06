@@ -15,7 +15,7 @@ class Disease extends Component {
         this.setState({loading: true});
 
 
-        // SELECT ?m ?p (GROUP_CONCAT(?v; SEPARATOR=", ")) as ?v
+        // SELECT ?p ?v
         // WHERE {
         // {
         // SELECT ?m WHERE {
@@ -26,14 +26,17 @@ class Disease extends Component {
         // }
         // ?m ?p ?v .
         // FILTER( (?p != rdfs:label && ?p != rdfs:comment && ?p != dbo:abstract) || lang(?v) = 'en' || lang(?v) = 'fr'  ) .
-        // }GROUP BY ?m ?p
+        // }
 
         fetch('http://dbpedia.org/sparql/?default-graph-uri=http%3A%2F%2Fdbpedia.org&query='
-            + 'SELECT ?p ?v WHERE'
-            + '+%7B%0D%0A%7B%0D%0ASELECT+%3Fm+WHERE'
-            + '+%7B%0D%0A%3Fm+a+dbo%3ADisease%3B%0D%0A+++rdfs%3Alabel+%3Fn+.%0D%0A'
-            + 'FILTER%28+%3Fn%3D%22' + this.state.diseaseName + '%22%40fr+%7C%7C+%3Fn%3D%22' + this.state.diseaseName + '%22%40en+%29+.%0D%0A%7D+limit+1%0D%0A%7D%0D%0A%3Fm+%3Fp+%3Fv+.%0D%0A'
-            + 'FILTER%28+%28%3Fp+%21%3D+rdfs%3Alabel+%26%26+%3Fp+%21%3D+rdfs%3Acomment+%26%26+%3Fp+%21%3D+dbo%3Aabstract%29+%7C%7C+lang%28%3Fv%29+%3D+%27en%27+%7C%7C+lang%28%3Fv%29+%3D+%27fr%27++%29+.%0D%0A%7DGROUP+BY+%3Fm+%3Fp'
+            + 'SELECT ?p ?v WHERE { '
+                + '{ SELECT ?m WHERE { '
+                    + '?m a dbo:Disease; rdfs:label ?n . '
+                    + 'FILTER( ?n="' + this.state.diseaseName + '"@fr || ?n="' + this.state.diseaseName + '"@en ) . '
+                + '} limit 1 } '
+                + '?m ?p ?v . '
+                + 'FILTER( (?p != rdfs:label %26%26 ?p != rdfs:comment %26%26 ?p!=dbo:abstract) %7C%7C lang(?v) = "en" %7C%7C lang(?v) = "fr" ) . '
+            + '}'
             + '&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query'
             ).then(r => {
             return r.json();
@@ -56,7 +59,12 @@ class Disease extends Component {
 
                 let v = dataArray[i].v;
                 if (!data[pvalue] || v["xml:lang"] === "fr")
-                    data[pvalue] = v;
+                    data[pvalue] = v; // = v;
+                else if (!data[pvalue]["xml:lang"])
+                    if (Array.isArray(data[pvalue]))
+                        data[pvalue].push(v);
+                    else 
+                        data[pvalue] = [data[pvalue], v];
             }
 
             this.setState({
@@ -68,10 +76,44 @@ class Disease extends Component {
     }
 
     render(){
+        let datacomponent;
+        
+        if (!this.state.loading) {
+            let img;
+            let abstract;
+            let seeAlso;
+
+            if (this.state.data.thumbnail.value)
+                img = <img  alt="img" src={this.state.data.thumbnail.value}/>;
+            if (this.state.data.abstract.value)
+                abstract = <p>{this.state.data.abstract.value}</p>;
+            if (this.state.data.seeAlso){
+                seeAlso = 
+                    <div>
+                        <span>Voir aussi :</span>
+                        <ul>
+                            {this.state.data.seeAlso.map(s => (
+                                <li>
+                                    <a href={s.value}>{s.value}</a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>;
+            }
+
+            datacomponent = (
+                <div>
+                    {img}
+                    {abstract}
+                    {seeAlso}
+                </div>
+            );
+        } else datacomponent = <p>Loading...</p>;
+        
         return(
             <div>
                 <h1>{this.state.diseaseName}</h1>
-                <p>{this.state.loading ? "Loading..." : this.state.data.abstract.value }</p>
+                {datacomponent}
             </div> 
         );
     }
