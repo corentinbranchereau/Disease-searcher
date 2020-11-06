@@ -1,23 +1,18 @@
-import React from 'react';
+import React from "react";
 
 class Virus extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			virusName: this.props.match.params.virusName,
+		};
+	}
 
-    constructor(props){
-        super(props);
-        this.state = {
-            virusName : this.props.match.params.virusName,
-        }
-    }
+	componentDidMount() {}
 
-    componentDidMount(){
-        
-    }
-
-    render(){
-        return (
-        <h1>{this.state.virusName}</h1>
-        );
-    }
+	render() {
+		return <h1>{this.state.virusName}</h1>;
+	}
 }
 
 export default Virus;

@@ -1,0 +1,30 @@
+.results img {
+	width: 300px;
+}
+
+.results {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.home-search {
+	padding: 15px;
+	width: 60vw;
+	border-radius: 50px;
+	border: none;
+	margin: 20px;
+}
+
+.results p {
+	font-size: 20px;
+	margin: 50px;
+}
+
+.disease-searcher-container button {
+	padding: 10px;
+	border-radius: 20px;
+	border: none;
+	background-color: #65a334;
+	color: white;
+}
