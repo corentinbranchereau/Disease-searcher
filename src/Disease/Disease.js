@@ -133,10 +133,10 @@ class Disease extends Component {
         }
         
         return(
-            <div>
+            <React.Fragment>
                 <h1>{this.state.diseaseName}</h1>
                 {dataComponent}
-            </div>
+            </React.Fragment>
         );
     }
 }
