@@ -148,7 +148,7 @@ class Search extends React.Component {
 								Disease
 								<br /> Searcher
 							</h2>
-							<p>by the HexaOne Team</p>
+							<p>By the HexaOne Team</p>
 						</div>
 
 						<div
