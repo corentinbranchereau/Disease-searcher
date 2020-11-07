@@ -20,9 +20,9 @@ class Search extends React.Component {
   fetchData = () => {
     this.setState({ searched: true, searchResults: [] });
     if (this.state.diseaseChecked && this.state.virusChecked) {
-	  //fetchSearchResultsDiseaseAndVirus(this.state.query, this.handleResults);
-	  fetchSearchResultsDisease(this.state.query, this.handleResults);
-	  fetchSearchResultsVirus(this.state.query, this.handleResults);
+      //fetchSearchResultsDiseaseAndVirus(this.state.query, this.handleResults);
+      fetchSearchResultsDisease(this.state.query, this.handleResults);
+      fetchSearchResultsVirus(this.state.query, this.handleResults);
     } else if (this.state.diseaseChecked) {
       fetchSearchResultsDisease(this.state.query, this.handleResults);
     } else if (this.state.virusChecked) {
@@ -30,8 +30,8 @@ class Search extends React.Component {
     }
   };
 
-  handleResults = (result,type) => {
-	result.type = type;
+  handleResults = (result, type) => {
+    result.type = type;
     let tmpSearchResults = this.state.searchResults;
     tmpSearchResults.push(result);
     this.setState({ searchResults: tmpSearchResults });
@@ -54,15 +54,15 @@ class Search extends React.Component {
   render() {
     let resultsToPrint;
     if (this.state.searchResults) {
-	  let searchResultsFiltered = this.state.searchResults.sort( (a,b) => {
-		  if(a.type === "virus"){
-			  return -1;
-		  }
-		  if(b.type === "disease"){
-			  return 1;
-		  }
-		  return 0;
-	  })
+      let searchResultsFiltered = this.state.searchResults.sort((a, b) => {
+        if (a.type === "virus") {
+          return -1;
+        }
+        if (b.type === "disease") {
+          return 1;
+        }
+        return 0;
+      });
       resultsToPrint = searchResultsFiltered.map((result) => {
         let name = result.nameFr ? result.nameFr.value : result.nameEn.value;
         let comment;
@@ -75,26 +75,17 @@ class Search extends React.Component {
         if (name)
           return (
             <li className={result.type}>
-              <h2>{result.type === "virus" ? "V" : "D" }</h2>
+              <h2>{result.type === "virus" ? "V" : "D"}</h2>
               <h3>{name}</h3>
               <p>
                 {comment.length >= subStringSize
                   ? comment.substring(0, subStringSize) + "..."
                   : comment}
               </p>
-			  <a href={'/'+ result.type + '/'+name} >
-				<button>
-					En savoir plus
-				</button>
-			  </a>
+              <a href={"/" + result.type + "/" + name}>
+                <button>En savoir plus</button>
+              </a>
             </li>
-            /*
-          <div className="results">
-            <h1>{name + "-" + result.type.value}</h1>
-            <img src={result.image.value} alt={name} />
-            {comment ? <p>{comment}</p> : <React.Fragment />}
-          </div>
-         */
           );
       });
     }
