@@ -1,30 +1,137 @@
 .results img {
-	width: 300px;
+  width: 300px;
 }
 
 .results {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .home-search {
-	padding: 15px;
-	width: 60vw;
-	border-radius: 50px;
-	border: none;
-	margin: 20px;
+  padding: 15px;
+  width: 60vw;
+  border-radius: 50px;
+  border: none;
+  margin: 20px;
 }
 
+/* Auto-completion */
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
 .results p {
-	font-size: 20px;
-	margin: 50px;
+  font-size: 20px;
+  margin: 50px;
 }
 
-.disease-searcher-container button {
-	padding: 10px;
-	border-radius: 20px;
-	border: none;
-	background-color: #65a334;
-	color: white;
+.searcher-container button {
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  background-color: #65a334;
+  color: white;
+}
+
+#search-options-container {
+  width: 40%;
+  display: flex;
+  justify-content: space-around;
+}
+
+#search-options-container .label {
+  position: absolute;
+  margin-left: 50px;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #65a334;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #65a334;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
