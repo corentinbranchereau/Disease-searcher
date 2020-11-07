@@ -3,7 +3,7 @@ import { fetchSearchResultsDiseaseAndVirus } from "../requests/Requests";
 import { fetchSearchResultsDisease } from "../requests/Requests";
 import { fetchSearchResultsVirus } from "../requests/Requests";
 import "./Search.css";
-//import logo from "../logo.png";
+import logo from "../logo2.svg";
 
 class Search extends React.Component {
   constructor() {
@@ -20,7 +20,9 @@ class Search extends React.Component {
   fetchData = () => {
     this.setState({ searched: true, searchResults: [] });
     if (this.state.diseaseChecked && this.state.virusChecked) {
-      fetchSearchResultsDiseaseAndVirus(this.state.query, this.handleResults);
+	  //fetchSearchResultsDiseaseAndVirus(this.state.query, this.handleResults);
+	  fetchSearchResultsDisease(this.state.query, this.handleResults);
+	  fetchSearchResultsVirus(this.state.query, this.handleResults);
     } else if (this.state.diseaseChecked) {
       fetchSearchResultsDisease(this.state.query, this.handleResults);
     } else if (this.state.virusChecked) {
@@ -28,7 +30,8 @@ class Search extends React.Component {
     }
   };
 
-  handleResults = (result) => {
+  handleResults = (result,type) => {
+	result.type = type;
     let tmpSearchResults = this.state.searchResults;
     tmpSearchResults.push(result);
     this.setState({ searchResults: tmpSearchResults });
@@ -51,7 +54,16 @@ class Search extends React.Component {
   render() {
     let resultsToPrint;
     if (this.state.searchResults) {
-      resultsToPrint = this.state.searchResults.map((result) => {
+	  let searchResultsFiltered = this.state.searchResults.sort( (a,b) => {
+		  if(a.type === "virus"){
+			  return -1;
+		  }
+		  if(b.type === "disease"){
+			  return 1;
+		  }
+		  return 0;
+	  })
+      resultsToPrint = searchResultsFiltered.map((result) => {
         let name = result.nameFr ? result.nameFr.value : result.nameEn.value;
         let comment;
         if (result.commentFr) {
@@ -62,15 +74,19 @@ class Search extends React.Component {
         let subStringSize = 200;
         if (name)
           return (
-            <li className="virus">
-              <h2>V</h2>
+            <li className={result.type}>
+              <h2>{result.type === "virus" ? "V" : "D" }</h2>
               <h3>{name}</h3>
               <p>
                 {comment.length >= subStringSize
                   ? comment.substring(0, subStringSize) + "..."
                   : comment}
               </p>
-              <button>En savoir plus</button>
+			  <a href={'/'+ result.type + '/'+name} >
+				<button>
+					En savoir plus
+				</button>
+			  </a>
             </li>
             /*
           <div className="results">
