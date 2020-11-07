@@ -62,7 +62,7 @@ class Search extends React.Component {
         let subStringSize = 200;
         if (name)
           return (
-            <li>
+            <li className="virus">
               <h2>V</h2>
               <h3>{name}</h3>
               <p>

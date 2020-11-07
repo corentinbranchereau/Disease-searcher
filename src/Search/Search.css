@@ -122,6 +122,8 @@ input:checked + .slider:before {
   margin: 0;
   list-style: none;
   text-align: center;
+  z-index: 0;
+  position: relative;
 }
 .results-container .tilesWrap li {
   display: inline-block;
@@ -221,14 +223,14 @@ input:checked + .slider:before {
   top: 0;
   background: rgba(255, 255, 255, 0.02);
 }
-.results-container .tilesWrap li:before {
-  background: #c9ffbf;
-  background: -webkit-linear-gradient(to right, #ffafbd, #c9ffbf);
-  background: linear-gradient(to right, #ffafbd, #c9ffbf);
+.results-container .tilesWrap .virus:before {
+  background: #9dff89;
+  background: -webkit-linear-gradient(to right, #ffafbd, #9dff89);
+  background: linear-gradient(to right, #ffafbd, #9dff89);
 }
 
-.results-container .tilesWrap li:before {
-  background: #7fb3d5;
-  background: -webkit-linear-gradient(to right, #ffafbd, #7fb3d5);
-  background: linear-gradient(to right, #ffafbd, #7fb3d5);
+.results-container .tilesWrap .disease:before {
+  background: #6bafd5;
+  background: -webkit-linear-gradient(to right, #ffafbd, #6bafd5);
+  background: linear-gradient(to right, #ffafbd, #6bafd5);
 }
