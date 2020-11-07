@@ -1,7 +1,7 @@
 import React from "react";
 import { fetchByVirusName } from "../requests/Requests";
 import "./Search.css";
-import logo from "../logo.svg";
+//import logo from "../logo.png";
 
 class Search extends React.Component {
 	constructor() {
@@ -50,7 +50,7 @@ class Search extends React.Component {
 		return (
 			<div className="disease-searcher-container">
 				<header className="App-header">
-					<img src={logo} className="App-logo" alt="logo" />
+					<img src="logo.png" className="App-logo" alt="logo" />
 					<p>The Disease Searcher, by the HexaOne Team</p>
 					<input
 						className="home-search"
