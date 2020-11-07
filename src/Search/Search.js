@@ -1,7 +1,7 @@
 import React from "react";
-import { fetchAutoCompletionDiseaseAndVirus } from "../requests/Requests";
-import { fetchAutoCompletionDisease } from "../requests/Requests";
-import { fetchAutoCompletionVirus } from "../requests/Requests";
+import { fetchSearchResultsDiseaseAndVirus } from "../requests/Requests";
+import { fetchSearchResultsDisease } from "../requests/Requests";
+import { fetchSearchResultsVirus } from "../requests/Requests";
 import "./Search.css";
 import logo from "../logo.svg";
 
@@ -20,11 +20,11 @@ class Search extends React.Component {
   fetchData = () => {
     this.setState({ searched: true, searchResults: [] });
     if (this.state.diseaseChecked && this.state.virusChecked) {
-      fetchAutoCompletionDiseaseAndVirus(this.state.query, this.handleResults);
+      fetchSearchResultsDiseaseAndVirus(this.state.query, this.handleResults);
     } else if (this.state.diseaseChecked) {
-      fetchAutoCompletionDisease(this.state.query, this.handleResults);
+      fetchSearchResultsDisease(this.state.query, this.handleResults);
     } else if (this.state.virusChecked) {
-      fetchAutoCompletionVirus(this.state.query, this.handleResults);
+      fetchSearchResultsVirus(this.state.query, this.handleResults);
     }
   };
 
@@ -50,16 +50,35 @@ class Search extends React.Component {
 
   render() {
     let resultsToPrint;
-    //<p>{result.comment.value}</p>
     if (this.state.searchResults) {
       resultsToPrint = this.state.searchResults.map((result) => {
-        let name = result.namefr ? result.namefr.value : result.nameen.value;
+        let name = result.nameFr ? result.nameFr.value : result.nameEn.value;
+        let comment;
+        if (result.commentFr) {
+          comment = result.commentFr.value;
+        } else if (result.commentEn) {
+          comment = result.commentEn.value;
+        }
+        let subStringSize = 200;
         if (name)
           return (
-            <div className="results">
-              <h1>{name}</h1>
-              <img src={result.image.value} alt={name} />
-            </div>
+            <li>
+              <h2>V</h2>
+              <h3>{name}</h3>
+              <p>
+                {comment.length >= subStringSize
+                  ? comment.substring(0, subStringSize) + "..."
+                  : comment}
+              </p>
+              <button>En savoir plus</button>
+            </li>
+            /*
+          <div className="results">
+            <h1>{name + "-" + result.type.value}</h1>
+            <img src={result.image.value} alt={name} />
+            {comment ? <p>{comment}</p> : <React.Fragment />}
+          </div>
+         */
           );
       });
     }
@@ -90,7 +109,7 @@ class Search extends React.Component {
                   defaultChecked={this.state.diseaseChecked}
                   onChange={this.handleCheckboxDisease}
                 />
-                <span className="slider round" />
+                <span className="slider round blue" />
                 <label className="label" htmlFor="disease">
                   Disease
                 </label>
@@ -102,7 +121,7 @@ class Search extends React.Component {
                   defaultChecked={this.state.virusChecked}
                   onChange={this.handleCheckboxVirus}
                 />
-                <span className="slider round" />
+                <span className="slider round green" />
                 <label className="label" htmlFor="virus">
                   Virus
                 </label>
@@ -116,7 +135,7 @@ class Search extends React.Component {
           ) : (
             <React.Fragment />
           )}
-          {resultsToPrint}
+          <ul className="tilesWrap">{resultsToPrint}</ul>
         </div>
       </React.Fragment>
     );
