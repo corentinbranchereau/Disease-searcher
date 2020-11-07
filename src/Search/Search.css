@@ -119,7 +119,7 @@ input:checked + .slider:before {
 
 .results-container .tilesWrap {
   padding: 0;
-  margin: 50px auto;
+  margin: 0;
   list-style: none;
   text-align: center;
 }
@@ -187,6 +187,7 @@ input:checked + .slider:before {
 .results-container .tilesWrap li:hover button {
   transform: translateY(5px);
   opacity: 1;
+  z-index: 2;
 }
 .results-container .tilesWrap li button:hover {
   color: #262a2b;
@@ -220,13 +221,13 @@ input:checked + .slider:before {
   top: 0;
   background: rgba(255, 255, 255, 0.02);
 }
-.results-container .tilesWrap .li.virus {
+.results-container .tilesWrap li:before {
   background: #c9ffbf;
   background: -webkit-linear-gradient(to right, #ffafbd, #c9ffbf);
   background: linear-gradient(to right, #ffafbd, #c9ffbf);
 }
 
-.results-container .tilesWrap .li.disease {
+.results-container .tilesWrap li:before {
   background: #7fb3d5;
   background: -webkit-linear-gradient(to right, #ffafbd, #7fb3d5);
   background: linear-gradient(to right, #ffafbd, #7fb3d5);
