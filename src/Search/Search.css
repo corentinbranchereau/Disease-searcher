@@ -56,8 +56,15 @@
 	top: 2vh;
 	font-size: 12px;
 }
+
+@media (max-width: 520px) {
+	.search-text-container.topbar {
+		display: none;
+	}
+}
+
 .search-text-container.topbar .search-title {
-	font-size: 25px;
+	font-size: 20px;
 }
 
 .search-logo {
@@ -77,7 +84,7 @@
 
 .home-search-bar {
 	position: absolute;
-	top: 50vh;
+	top: 60vh;
 	width: 40vw;
 	left: 30vw;
 	transition: all 1s ease;
@@ -88,11 +95,26 @@
 	width: 100%;
 	border-radius: 50px;
 	border: none;
-	margin: 20px;
+	margin-left: -15px;
 }
 
 .home-search-bar.topbar {
 	top: 5vh;
+}
+
+@media (max-width: 768px) {
+	.home-search-bar {
+		position: absolute;
+		top: 50vh;
+		width: 60vw;
+		left: 20vw;
+	}
+	.home-search-bar input {
+		margin: 0px;
+	}
+	.home-search-bar input {
+		width: 90%;
+	}
 }
 
 .results img {
@@ -105,8 +127,8 @@
 
 .search-options {
 	position: absolute;
-	top: 28px;
-	right: 0px;
+	top: 10px;
+	right: 30px;
 }
 
 .results {
