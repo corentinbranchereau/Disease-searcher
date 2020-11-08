@@ -1,5 +1,4 @@
 import React from "react";
-import { fetchSearchResultsDiseaseAndVirus } from "../requests/Requests";
 import { fetchSearchResultsDisease } from "../requests/Requests";
 import { fetchSearchResultsVirus } from "../requests/Requests";
 import "./Search.css";

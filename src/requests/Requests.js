@@ -52,7 +52,7 @@ export async function fetchSearchResultsDisease(userEntry, onResultsFound) {
       `
         SELECT ?s as ?search ?nameFr ?nameEn ?commentFr ?commentEn ?image
         WHERE {
-            ?s a dbo:Disease;
+            ?s a yago:Disease114070360;
             foaf:depiction ?image
             FILTER regex(?s, "` +
         userEntry +
