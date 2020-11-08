@@ -1,4 +1,6 @@
 import React,{Component} from 'react';
+import { useHistory } from 'react-router-dom';
+
 import "./Disease.css";
 
 class Disease extends Component {
@@ -6,10 +8,10 @@ class Disease extends Component {
     constructor(props){
         super(props);
         this.state = {
-            loading : true,
-            diseaseName : this.props.match.params.diseaseName,
-            data : {},
-            notFound : false
+            loading : true, //true if we fetch the results
+            diseaseName : this.props.match.params.diseaseName, //url param
+            data : {}, //data parsed from the fetch
+            notFound : false //if error from the request
         }
     }
 
@@ -92,7 +94,12 @@ class Disease extends Component {
         });
     }
 
-    render(){
+    routeChange = () => {
+        /*let history = useHistory();
+        history.push('/'); //back to search*/
+    }
+
+    render() {
         let dataComponent;
         
         if (!this.state.notFound) {
@@ -103,17 +110,17 @@ class Disease extends Component {
                 // TODO : add more info 
 
                 if (this.state.data.thumbnail.value)
-                    img = <img  alt="img" src={this.state.data.thumbnail.value}/>;
+                    img = <img className="disease-image" alt="img" src={this.state.data.thumbnail.value}/>;
                 if (this.state.data.abstract.value)
-                    abstract = <p>{this.state.data.abstract.value}</p>;
+                    abstract = <p className="disease-abstract">{this.state.data.abstract.value}</p>;
                 if (this.state.data.seeAlso){
-                    seeAlso = 
-                        <div>
+                    seeAlso =
+                        <div className="disease-seeAlso">
                             <span>Voir aussi :</span>
                             <ul>
                                 {this.state.data.seeAlso.map(s => (
                                     <li key={s.value}>
-                                        <a href={s.value}>{s.value}</a>
+                                        <a className="disease-seeAlso-link" href={s.value}>{s.value}</a>
                                     </li>
                                 ))}
                             </ul>
@@ -121,9 +128,9 @@ class Disease extends Component {
                 }
 
                 dataComponent = (
-                    <div>
-                        {img}
+                    <div className="disease-data">
                         {abstract}
+                        {img}
                         {seeAlso}
                     </div>
                 );
@@ -134,8 +141,15 @@ class Disease extends Component {
         
         return(
             <React.Fragment>
-                <h1>{this.state.diseaseName}</h1>
-                {dataComponent}
+                <div className="disease-container">
+                    <div className="disease-header">
+                        <h1 className="disease-name">{this.state.diseaseName}</h1>
+                    </div>
+                    {dataComponent}
+                    <div className="disease-footer">
+                        <button className="disease-newResearch-button" onClick={this.routeChange} >New Research</button>
+                    </div>
+                </div>
             </React.Fragment>
         );
     }
