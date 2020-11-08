@@ -1,5 +1,4 @@
 import React,{Component} from 'react';
-import { useHistory } from 'react-router-dom';
 
 import "./Disease.css";
 
@@ -94,11 +93,6 @@ class Disease extends Component {
         });
     }
 
-    routeChange = () => {
-        /*let history = useHistory();
-        history.push('/'); //back to search*/
-    }
-
     render() {
         let dataComponent;
         
@@ -147,7 +141,7 @@ class Disease extends Component {
                     </div>
                     {dataComponent}
                     <div className="disease-footer">
-                        <button className="disease-newResearch-button" onClick={this.routeChange} >New Research</button>
+                        <button className="disease-newResearch-button" onClick={() => this.props.history.push("/")} >New Research</button>
                     </div>
                 </div>
             </React.Fragment>
