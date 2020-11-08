@@ -1,4 +1,5 @@
 import React,{Component} from 'react';
+import "./Disease.css";
 
 class Disease extends Component {
 
@@ -7,25 +8,30 @@ class Disease extends Component {
         this.state = {
             loading : true,
             diseaseName : this.props.match.params.diseaseName,
-            data : {}
+            data : {},
+            notFound : false
         }
     }
 
     componentDidMount(){
-        this.setState({loading: true});
-
 
         // SELECT ?p ?v
         // WHERE {
-        // {
-        // SELECT ?m WHERE {
-        // ?m a dbo:Disease;
-        // rdfs:label ?n .
-        // FILTER( ?n="Psoriasis"@fr || ?n="Psoriasis"@en ) .
-        // } limit 1
-        // }
-        // ?m ?p ?v .
-        // FILTER( (?p != rdfs:label && ?p != rdfs:comment && ?p != dbo:abstract) || lang(?v) = 'en' || lang(?v) = 'fr'  ) .
+        //     {
+        //         SELECT ?m WHERE {
+        //         ?m a dbo:Disease;
+        //         rdfs:label ?n .
+        //         FILTER( ?n="Psoriasis"@fr || ?n="Psoriasis"@en ) .
+        //         } limit 1
+        //     }
+        //     {
+        //         ?m ?p ?v
+        //         FILTER( (?p != rdfs:label && ?p != rdfs:comment && ?p != dbo:abstract) || lang(?v) = 'en' || lang(?v) = 'fr'  )
+        //     }
+        //     UNION
+        //     {
+        //         ?v ?p ?m
+        //     }
         // }
 
         fetch('http://dbpedia.org/sparql/?default-graph-uri=http%3A%2F%2Fdbpedia.org&query='
@@ -34,8 +40,14 @@ class Disease extends Component {
                     + '?m a dbo:Disease; rdfs:label ?n . '
                     + 'FILTER( ?n="' + this.state.diseaseName + '"@fr || ?n="' + this.state.diseaseName + '"@en ) . '
                 + '} limit 1 } '
-                + '?m ?p ?v . '
-                + 'FILTER( (?p != rdfs:label %26%26 ?p != rdfs:comment %26%26 ?p!=dbo:abstract) %7C%7C lang(?v) = "en" %7C%7C lang(?v) = "fr" ) . '
+                + '{'
+                    + '?m ?p ?v . '
+                    + 'FILTER( (?p != rdfs:label %26%26 ?p != rdfs:comment %26%26 ?p!=dbo:abstract) %7C%7C lang(?v) = "en" %7C%7C lang(?v) = "fr" ) . '
+                + '}'
+                + 'UNION'
+                + '{'
+                    + '?v ?p ?m'
+                + '}'
             + '}'
             + '&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query'
             ).then(r => {
@@ -66,55 +78,65 @@ class Disease extends Component {
                     else 
                         data[pvalue] = [data[pvalue], v];
             }
-
-            this.setState({
-                loading: false,
-                data: data
-            });
-            console.log(this.state.data);
+            if(data.label) { // If there's at least a label then the response is good
+                this.setState({
+                    loading: false,
+                    data: data
+                });
+                console.log(this.state.data);
+            } else
+                this.setState({notFound : true});
+        }).catch(function(error) {
+            console.log('Il y a eu un problème avec l\'opération fetch: ' + error.message);
+            this.setState({notFound : true});
         });
     }
 
     render(){
-        let datacomponent;
+        let dataComponent;
         
-        if (!this.state.loading) {
-            let img;
-            let abstract;
-            let seeAlso;
+        if (!this.state.notFound) {
+            if (!this.state.loading) {
+                let img;
+                let abstract;
+                let seeAlso;
+                // TODO : add more info 
 
-            if (this.state.data.thumbnail.value)
-                img = <img  alt="img" src={this.state.data.thumbnail.value}/>;
-            if (this.state.data.abstract.value)
-                abstract = <p>{this.state.data.abstract.value}</p>;
-            if (this.state.data.seeAlso){
-                seeAlso = 
+                if (this.state.data.thumbnail.value)
+                    img = <img  alt="img" src={this.state.data.thumbnail.value}/>;
+                if (this.state.data.abstract.value)
+                    abstract = <p>{this.state.data.abstract.value}</p>;
+                if (this.state.data.seeAlso){
+                    seeAlso = 
+                        <div>
+                            <span>Voir aussi :</span>
+                            <ul>
+                                {this.state.data.seeAlso.map(s => (
+                                    <li key={s.value}>
+                                        <a href={s.value}>{s.value}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>;
+                }
+
+                dataComponent = (
                     <div>
-                        <span>Voir aussi :</span>
-                        <ul>
-                            {this.state.data.seeAlso.map(s => (
-                                <li>
-                                    <a href={s.value}>{s.value}</a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>;
-            }
-
-            datacomponent = (
-                <div>
-                    {img}
-                    {abstract}
-                    {seeAlso}
-                </div>
-            );
-        } else datacomponent = <p>Loading...</p>;
+                        {img}
+                        {abstract}
+                        {seeAlso}
+                    </div>
+                );
+            } else dataComponent = <p>Loading...</p>;
+        } else {
+            
+        }
         
         return(
-            <div>
+            <React.Fragment>
                 <h1>{this.state.diseaseName}</h1>
-                {datacomponent}
-            </div> 
+                {dataComponent}
+            </React.Fragment>
         );
     }
 }
