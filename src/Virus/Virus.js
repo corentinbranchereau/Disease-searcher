@@ -93,54 +93,132 @@ class Virus extends React.Component {
 	render() {
 		return this.state.virus.length === 0 ? (
 			<h1>Chargement des ressources</h1>
-		) : this.state.language === "en" ? (
-			<div id="virus">
-				<button id="language" onClick={this.changeLanguage}>
-					{this.state.language}
-				</button>
-
-				<div id="col1">
-					<dt>Virus Name</dt>
-					<dd>{this.state.virus.name.value}</dd>
-
-					<dt>Order</dt>
-					<dd>{this.state.virus.orderNameEn.value}</dd>
-
-					<dt>Description</dt>
-					<dd>{this.state.virus.descriptionEn.value}</dd>
-				</div>
-
-				<div id="col2">
-					<dt>Virus Picture</dt>
-					<dd>
-						<img src={this.state.virus.image.value} alt="hola" />
-					</dd>
-				</div>
-			</div>
 		) : (
-			<div id="virus">
+			<React.Fragment>
 				<button id="language" onClick={this.changeLanguage}>
 					{this.state.language}
 				</button>
-
-				<div id="col1">
-					<dt>Nom du virus</dt>
-					<dd>{this.state.virus.name.value}</dd>
-
-					<dt>Classe parente</dt>
-					<dd>{this.state.virus.orderNameFr.value}</dd>
-
-					<dt>Description</dt>
-					<dd>{this.state.virus.descriptionFr.value}</dd>
-				</div>
-
-				<div id="col2">
-					<dt>Image du virus</dt>
-					<dd>
-						<img src={this.state.virus.image.value} alt="hola" />
-					</dd>
-				</div>
-			</div>
+				{this.state.language === "en" ? (
+					<table>
+						<thead>
+							<tr>
+								<th colSpan="2">Identification</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Name</td>
+								<td>{this.state.virus.name.value}</td>
+							</tr>
+							<tr>
+								<td>Image</td>
+								<td class="img-td">
+									<img
+										src={this.state.virus.image.value}
+										alt=""
+									></img>
+								</td>
+							</tr>
+							{this.state.virus.descriptionEn ===
+							undefined ? null : (
+								<tr>
+									<td>Description</td>
+									<td>
+										{this.state.virus.descriptionEn.value}
+									</td>
+								</tr>
+							)}
+							{this.state.virus.familyNameEn ===
+							undefined ? null : (
+								<tr>
+									<td>Virus family</td>
+									<td>
+										{this.state.virus.familyNameEn.value}
+									</td>
+								</tr>
+							)}
+							{this.state.virus.subFamilyNameEn === undefined ? (
+								""
+							) : (
+								<tr>
+									<td>Virus subfamily(ies)</td>
+									<td>
+										{this.state.virus.subFamilyNameEn.value}
+									</td>
+								</tr>
+							)}
+							{this.state.virus.orderNameEn ===
+							undefined ? null : (
+								<tr>
+									<td>Order</td>
+									<td>
+										{this.state.virus.orderNameEn.value}
+									</td>
+								</tr>
+							)}
+						</tbody>
+					</table>
+				) : (
+					<table>
+						<thead>
+							<tr>
+								<th colSpan="2">Identification</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Nom</td>
+								<td>{this.state.virus.name.value}</td>
+							</tr>
+							<tr>
+								<td>Image</td>
+								<td class="img-td">
+									<img
+										src={this.state.virus.image.value}
+										alt=""
+									></img>
+								</td>
+							</tr>
+							{this.state.virus.descriptionFr ===
+							undefined ? null : (
+								<tr>
+									<td>Description</td>
+									<td>
+										{this.state.virus.descriptionFr.value}
+									</td>
+								</tr>
+							)}
+							{this.state.virus.familyNameFr ===
+							undefined ? null : (
+								<tr>
+									<td>Famille du virus</td>
+									<td>
+										{this.state.virus.familyNameFr.value}
+									</td>
+								</tr>
+							)}
+							{this.state.virus.subFamilyNameFr ===
+							undefined ? null : (
+								<tr>
+									<td>Sous-famille(s) du virus</td>
+									<td>
+										{this.state.virus.subFamilyNameFr.value}
+									</td>
+								</tr>
+							)}
+							{this.state.virus.orderNameFr ===
+							undefined ? null : (
+								<tr>
+									<td>Ordre</td>
+									<td>
+										{this.state.virus.orderNameFr.value}
+									</td>
+								</tr>
+							)}
+						</tbody>
+					</table>
+				)}
+			</React.Fragment>
 		);
 	}
 }
