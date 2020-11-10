@@ -12,6 +12,7 @@ class Search extends React.Component {
 			searchResults: [], // an array where the results found are added
 			query: "", // the text typed into the search input
 			searching: false, // defines if the "Rechercher" button has been pressed once
+			typing: false, //defines if the input bar has focus (ie: the user is going to type)
 			diseaseChecked: true, //define if the checkbox disease is checked or not
 			virusChecked: true, //define if the checkbox virus is checked or not
 			showOptions: false, // define if you can see the search options
@@ -22,35 +23,44 @@ class Search extends React.Component {
 		
 		fetchSearchResultsFromMesh(this.state.query, this.handleResults);
 		/*
+	fetchData = (valueToSearch) => {
 		if (this.state.diseaseChecked && this.state.virusChecked) {
-			fetchSearchResultsDisease(this.state.query, this.handleResults);
-			fetchSearchResultsVirus(this.state.query, this.handleResults);
+			fetchSearchResultsDisease(valueToSearch, this.handleResults);
+			fetchSearchResultsVirus(valueToSearch, this.handleResults);
 		} else if (this.state.diseaseChecked) {
-			fetchSearchResultsDisease(this.state.query, this.handleResults);
+			fetchSearchResultsDisease(valueToSearch, this.handleResults);
 		} else if (this.state.virusChecked) {
-			fetchSearchResultsVirus(this.state.query, this.handleResults);
+			fetchSearchResultsVirus(valueToSearch, this.handleResults);
 		}
 		*/
 	};
 
-	handleResults = (results, type) => {
-		results.type = type;
-		results.map((result) => {
-			result.type = type;
-			let tmpSearchResults = this.state.searchResults;
-			tmpSearchResults.push(result);
-			this.setState({ searchResults: tmpSearchResults });
-			return 1;
-		});
-	};
-
-	handleInputChange = (event) => {
-		this.setState({ query: this.search.value });
-		if (event.key === "Enter") {
-			this.fetchData();
-			this.setState({ searching: true, searchResults: [] });
+	handleResults = (results, queryResponded) => {
+		if (queryResponded === this.state.query) {
+			//verifying that the response corresponds to the displayed search word
+			this.setState({ searchResults: [] });
+			results.map((result) => {
+				let tmpSearchResults = this.state.searchResults;
+				tmpSearchResults.push(result);
+				this.setState({ searchResults: tmpSearchResults });
+				return 1;
+			});
 		}
 	};
+
+	handleInputChange = () => {
+		this.setState({ query: this.search.value });
+		this.fetchData(this.search.value);
+	};
+	handleKeyDown = (event) => {
+		if (event.key === "Enter") {
+			this.setState({ searching: true });
+		}
+	};
+
+	handleTyping(typing) {
+		this.setState({ typing });
+	}
 
 	handleCheckboxDisease = () => {
 		let checked = !this.state.diseaseChecked;
@@ -73,32 +83,13 @@ class Search extends React.Component {
 
 	render() {
 		let resultsToPrint;
+		let resultsSuggestions;
 		if (this.state.searchResults) {
 			let searchResultsFiltered = this.state.searchResults.sort(
 				(a, b) => {
-					if (a.type === "virus") {
-						if (b.type === "virus") {
-							if (a.nameEn.value < b.nameEn.value) {
-								return -1;
-							} else {
-								return 1;
-							}
-						} else {
-							return -1;
-						}
-					}
-					if (a.type === "disease") {
-						if (b.type === "disease") {
-							if (a.nameEn.value < b.nameEn.value) {
-								return -1;
-							} else {
-								return 1;
-							}
-						} else {
-							return 1;
-						}
-					}
-					return 0;
+					let nameA = a.nameFr ? a.nameFr.value : a.nameEn.value;
+					let nameB = b.nameFr ? b.nameFr.value : b.nameEn.value;
+					return nameA < nameB;
 				}
 			);
 			resultsToPrint = searchResultsFiltered.map((result) => {
@@ -114,8 +105,8 @@ class Search extends React.Component {
 				let subStringSize = 200;
 				if (name) {
 					return (
-						<li className={result.type} key={name}>
-							<h2>{result.type === "virus" ? "V" : "D"}</h2>
+						<li className="disease" key={name}>
+							<h2>{name.charAt(0).toUpperCase()}</h2>
 							<h3>{name}</h3>
 							<p>
 								{comment.length >= subStringSize
@@ -123,7 +114,7 @@ class Search extends React.Component {
 									  "..."
 									: comment}
 							</p>
-							<a href={"/" + result.type + "/" + name}>
+							<a href={"/disease/" + name}>
 								<button>En savoir plus</button>
 							</a>
 						</li>
@@ -131,11 +122,31 @@ class Search extends React.Component {
 				}
 				return <React.Fragment />;
 			});
+			if (this.state.typing && this.state.query !== "") {
+				resultsSuggestions = searchResultsFiltered.map((result) => {
+					let nameEN = result.nameEn.value;
+					let index = nameEN.indexOf(this.state.query);
+					let wordList;
+					if (index !== -1) {
+						wordList = result;
+					}
+					return (
+						<div className="suggestion-single-result">{nameEN}</div>
+					);
+				});
+			}
 		}
 
 		return (
 			<React.Fragment>
-				<div className="searcher-container">
+				<div
+					className="searcher-container"
+					style={
+						this.state.searching
+							? { overflow: "scroll" }
+							: { maxHeight: "100vh", overflow: "hidden" }
+					}
+				>
 					<div
 						className={
 							this.state.searching
@@ -177,9 +188,14 @@ class Search extends React.Component {
 								type="text"
 								name="search"
 								id="search"
+								value={this.state.value}
 								placeholder="Rechercher une maladie. ex: coronavirus"
+								autoComplete="off"
 								ref={(input) => (this.search = input)}
-								onKeyDown={this.handleInputChange}
+								onKeyDown={this.handleKeyDown}
+								onChange={this.handleInputChange}
+								onFocus={() => this.handleTyping(true)}
+								onBlur={() => this.handleTyping(true)}
 							/>
 							<div
 								className="search-options"
@@ -224,14 +240,22 @@ class Search extends React.Component {
 						</div>
 					</div>
 				</div>
+				<div className="suggestion-results">{resultsSuggestions}</div>
+
 				<div className="results-container">
 					{this.state.searching &&
 					this.state.searchResults.length === 0 ? (
-						<h2>Pas de résultats</h2>
+						<h2 style={{ textAlign: "center" }}>
+							Pas de résultats
+						</h2>
 					) : (
 						<React.Fragment />
 					)}
-					<ul className="tilesWrap">{resultsToPrint}</ul>
+					{this.state.searching ? (
+						<ul className="tilesWrap">{resultsToPrint}</ul>
+					) : (
+						<React.Fragment />
+					)}
 				</div>
 			</React.Fragment>
 		);

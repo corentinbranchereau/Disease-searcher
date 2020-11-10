@@ -84,7 +84,7 @@
 
 .home-search-bar {
 	position: absolute;
-	top: 60vh;
+	top: 52vh;
 	width: 40vw;
 	left: 30vw;
 	transition: all 1s ease;
@@ -105,7 +105,7 @@
 @media (max-width: 768px) {
 	.home-search-bar {
 		position: absolute;
-		top: 50vh;
+		top: 52vh;
 		width: 60vw;
 		left: 20vw;
 	}
@@ -393,4 +393,18 @@ input:checked + .slider:before {
 	background: #6bafd5;
 	background: -webkit-linear-gradient(to right, #ffafbd, #6bafd5);
 	background: linear-gradient(to right, #ffafbd, #6bafd5);
+}
+
+.suggestion-results {
+	position: absolute;
+	top: 56.8vh;
+	background-color: white;
+	left: 29vw;
+	width: 42vw;
+}
+
+.suggestion-single-result {
+	padding: 10px;
+	border-bottom: 1px solid black;
+	/* border-radius: 20px; */
 }

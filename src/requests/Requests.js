@@ -87,7 +87,7 @@ export async function fetchSearchResultsDisease(userEntry, onResultsFound) {
 			.then((res) => res.json())
 			.then(
 				(result) => {
-					onResultsFound(result.results.bindings, "disease");
+					onResultsFound(result.results.bindings, userEntry);
 				},
 				(error) => {
 					console.log("Error : ", error);
@@ -134,7 +134,7 @@ export async function fetchSearchResultsVirus(userEntry, onResultsFound) {
 			.then((res) => res.json())
 			.then(
 				(result) => {
-					onResultsFound(result.results.bindings, "virus");
+					onResultsFound(result.results.bindings, userEntry);
 				},
 				(error) => {
 					console.log("Error : ", error);
