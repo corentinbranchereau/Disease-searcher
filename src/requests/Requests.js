@@ -3,12 +3,11 @@
 export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
 	try {
 		let requestUrl =
-			"http://id.nlm.nih.gov/mesh/sparql";
+			"https://id.nlm.nih.gov/mesh/sparql?query=";
 		let suffixUrl =
-			"&inference=true&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query+";
+			"&format=JSON&year=current&limit=1000&offset=0&inference=true";
 		let query =
-            ` 
-            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -21,7 +20,6 @@ export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
             PREFIX mesh2019: <http://id.nlm.nih.gov/mesh/2019/>
             PREFIX mesh2020: <http://id.nlm.nih.gov/mesh/2020/>
             PREFIX mesh2021: <http://id.nlm.nih.gov/mesh/2021/>
-
             SELECT ?dId ?mId ?label ?comment
             FROM <http://id.nlm.nih.gov/mesh>
             WHERE {
@@ -32,15 +30,16 @@ export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
             meshv:preferredConcept ?concept.
             ?concept meshv:identifier ?mId;
             meshv:scopeNote ?comment.
-            FILTER(REGEX(?label,"corona","i"))
+            FILTER(REGEX(?label,"` +
+			userEntry +
+			`","i")).
             }
-            ORDER BY ?dId ?mId
-                   `;
+            ORDER BY ?dId ?mId`;
 		fetch(requestUrl + query + suffixUrl)
 			.then((res) => res.json())
 			.then(
 				(result) => {
-					onResultsFound(result.results.bindings);
+					onResultsFound(result.results.bindings, userEntry);
 				},
 				(error) => {
 					console.log("Error : ", error);

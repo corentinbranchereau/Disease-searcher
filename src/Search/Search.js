@@ -87,21 +87,12 @@ class Search extends React.Component {
 		if (this.state.searchResults) {
 			let searchResultsFiltered = this.state.searchResults.sort(
 				(a, b) => {
-					let nameA = a.nameFr ? a.nameFr.value : a.nameEn.value;
-					let nameB = b.nameFr ? b.nameFr.value : b.nameEn.value;
-					return nameA < nameB;
+					return a.label.value < b.label.value;
 				}
 			);
 			resultsToPrint = searchResultsFiltered.map((result) => {
-				let name = result.nameFr
-					? result.nameFr.value
-					: result.nameEn.value;
-				let comment;
-				if (result.commentFr) {
-					comment = result.commentFr.value;
-				} else if (result.commentEn) {
-					comment = result.commentEn.value;
-				}
+				let name = result.label.value;
+				let comment =  result.comment.value;
 				let subStringSize = 200;
 				if (name) {
 					return (
