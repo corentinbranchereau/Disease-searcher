@@ -50,23 +50,33 @@ class Disease extends Component {
 
 
         if(data.P486) {  // TODO // If there's at least a label then the response is good
-            let newState = { ...this.state };
+            let newData = { ...this.state.data };
+            newData[lang] = data
 
-            newState.loading = false;
-            newState.data[lang] = data;
-
-            this.setState(newState);
+            this.setState({data : newData, loading : false});
 
             console.log(this.state.data);
         } else
             this.setState({notFound : true});
     }
 
+    changeLang = () => {
+        let newLang = "fr";
+        if ( this.state.lang === "fr" ) newLang = "en";
+
+        if ( !this.state.data[newLang] ) {
+            fetchAllInfos("C00656484", "SARS-CoV-2", newLang).then(r => this.parseData(r, newLang));
+            this.setState({lang : newLang, loading : true});
+        } else {
+            this.setState({lang : newLang});
+        }
+
+    }
+
     componentDidMount(){
-
-        fetchAllInfos("C00656484", "SARS-CoV-2", this.state.lang).then(r => this.parseData(r, this.state.lang));
-        fetchAllInfos("C00656484", "SARS-CoV-2", "en").then(r => this.parseData(r, "en")); //TODO on change lang
-
+        let lang = this.state.lang;
+        fetchAllInfos("C00656484", "SARS-CoV-2", lang).then(r => this.parseData(r, lang));
+        this.changeLang();
     }
 
     render() {
