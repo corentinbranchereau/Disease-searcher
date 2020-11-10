@@ -1,6 +1,7 @@
 import React from "react";
 import { fetchSearchResultsDisease } from "../requests/Requests";
 import { fetchSearchResultsVirus } from "../requests/Requests";
+import { fetchSearchResultsFromMesh } from "../requests/Requests"
 import "./Search.css";
 import logo from "../logo2.svg";
 
@@ -18,6 +19,9 @@ class Search extends React.Component {
 	}
 
 	fetchData = () => {
+		
+		fetchSearchResultsFromMesh(this.state.query, this.handleResults);
+		/*
 		if (this.state.diseaseChecked && this.state.virusChecked) {
 			fetchSearchResultsDisease(this.state.query, this.handleResults);
 			fetchSearchResultsVirus(this.state.query, this.handleResults);
@@ -26,6 +30,7 @@ class Search extends React.Component {
 		} else if (this.state.virusChecked) {
 			fetchSearchResultsVirus(this.state.query, this.handleResults);
 		}
+		*/
 	};
 
 	handleResults = (results, type) => {
