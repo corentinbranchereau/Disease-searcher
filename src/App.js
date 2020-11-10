@@ -8,8 +8,7 @@ import {
 
 import "./App.css";
 import Search from "./Search/Search";
-import Disease from "./Disease/Disease";
-import Virus from "./Virus/Virus";
+import Entity from "./Entity/Entity";
 
 class App extends Component {
 	render() {
@@ -18,10 +17,9 @@ class App extends Component {
 				<Switch>
 					{/* Front Pages */}
 					<Route path="/" component={Search} exact />
-					<Route path="/virus/:virusName" component={Virus} exact />
 					<Route
-						path="/disease/:diseaseName"
-						component={Disease}
+						path="/entity/:name/:idD?/:idM?"
+						component={Entity}
 						exact
 					/>
 
