@@ -23,3 +23,7 @@ input:focus {
 #hidden {
 	display: none;
 }
+
+html {
+	height: 100%;
+}
