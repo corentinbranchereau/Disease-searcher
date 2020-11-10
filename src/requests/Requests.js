@@ -5,44 +5,40 @@ export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
 		let requestUrl =
 			"https://id.nlm.nih.gov/mesh/sparql?query=";
 		let suffixUrl =
-			"&format=JSON&year=current&limit=1000&offset=0&inference=true";
+			"&format=application/sparql-result+json&year=current&limit=50&offset=0&inference=true";
 		let query =
-            `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-            PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX meshv: <http://id.nlm.nih.gov/mesh/vocab#>
-            PREFIX mesh: <http://id.nlm.nih.gov/mesh/>
-            PREFIX mesh2015: <http://id.nlm.nih.gov/mesh/2015/>
-            PREFIX mesh2016: <http://id.nlm.nih.gov/mesh/2016/>
-            PREFIX mesh2017: <http://id.nlm.nih.gov/mesh/2017/>
-            PREFIX mesh2018: <http://id.nlm.nih.gov/mesh/2018/>
-            PREFIX mesh2019: <http://id.nlm.nih.gov/mesh/2019/>
-            PREFIX mesh2020: <http://id.nlm.nih.gov/mesh/2020/>
-            PREFIX mesh2021: <http://id.nlm.nih.gov/mesh/2021/>
+            `PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>
+            PREFIX owl:<http://www.w3.org/2002/07/owl#>
+            PREFIX meshv:<http://id.nlm.nih.gov/mesh/vocab#>
+            
             SELECT ?dId ?mId ?label ?comment
             FROM <http://id.nlm.nih.gov/mesh>
             WHERE {
-            ?descriptor a meshv:Descriptor;
-            meshv:identifier ?dId;
-            rdfs:label ?label;
-            meshv:active 1;
-            meshv:preferredConcept ?concept.
-            ?concept meshv:identifier ?mId;
-            meshv:scopeNote ?comment.
-            FILTER(REGEX(?label,"` +
-			userEntry +
-			`","i")).
+              ?descriptor a meshv:Descriptor;
+                            meshv:identifier ?dId;
+                            rdfs:label ?label;
+                            meshv:active 1;
+                            meshv:preferredConcept ?concept.
+              ?concept meshv:identifier ?mId;
+                       meshv:scopeNote ?comment.
+              FILTER(REGEX(?label,"corona","i")).
             }
-            ORDER BY ?dId ?mId`;
-		fetch(requestUrl + query + suffixUrl)
-			.then((res) => res.json())
+            ORDER BY ?dId ?mId`       
+        let encodedQuery = encodeURI(query);
+        console.log(requestUrl + encodedQuery +suffixUrl);
+		fetch(requestUrl + encodedQuery + suffixUrl)
+			.then((res) => {
+                console.log(res);
+                res.json()
+            })
 			.then(
 				(result) => {
-					onResultsFound(result.results.bindings, userEntry);
+                    onResultsFound(result.results.bindings, userEntry);
 				},
 				(error) => {
-					console.log("Error : ", error);
+					console.log("c : ", error);
 				}
 			);
 	} catch (err) {

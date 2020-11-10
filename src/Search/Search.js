@@ -1,6 +1,4 @@
 import React from "react";
-import { fetchSearchResultsDisease } from "../requests/Requests";
-import { fetchSearchResultsVirus } from "../requests/Requests";
 import { fetchSearchResultsFromMesh } from "../requests/Requests"
 import "./Search.css";
 import logo from "../logo2.svg";
@@ -115,14 +113,14 @@ class Search extends React.Component {
 			});
 			if (this.state.typing && this.state.query !== "") {
 				resultsSuggestions = searchResultsFiltered.map((result) => {
-					let nameEN = result.nameEn.value;
-					let index = nameEN.indexOf(this.state.query);
+					let name = result.label.value;
+					let index = name.indexOf(this.state.query);
 					let wordList;
 					if (index !== -1) {
 						wordList = result;
 					}
 					return (
-						<div className="suggestion-single-result">{nameEN}</div>
+						<div className="suggestion-single-result">{name}</div>
 					);
 				});
 			}
