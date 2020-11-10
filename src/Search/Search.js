@@ -114,7 +114,7 @@ class Search extends React.Component {
 			});
 			if (this.state.typing && this.state.query !== "") {
 				resultsSuggestions = searchResultsFiltered.map((result) => {
-					let nameEN = result.nameEn.value.toLowerCase();
+					let nameEN = result.label.value.toLowerCase();
 					let recherche = this.state.query.toLowerCase();
 					let index = nameEN.indexOf(nameEN);
 					let wordList;
