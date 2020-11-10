@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import {fetchAllInfos_en2} from '../requests/Requests'
+import {fetchAllInfos} from '../requests/Requests'
 
 import "./Disease.css";
 
@@ -8,6 +8,7 @@ class Disease extends Component {
     constructor(props){
         super(props);
         this.state = {
+            lang : "fr", //TODO Mettre une langue par défaut
             loading : true, //true if we fetch the results
             diseaseName : this.props.match.params.diseaseName, //url param
             data : {}, //data parsed from the fetch
@@ -15,91 +16,61 @@ class Disease extends Component {
         }
     }
 
+    parseData = (dataArray, lang) => {
+        console.log(dataArray);
+
+        let data = {};
+
+        for (let i = 0; i < dataArray.length; i++) {
+            
+            let p = dataArray[i].p;
+            let pvalue = p.value;
+            
+            if (p.type === "uri") { 
+                    let split = p.value.split("/");
+                    split = split[split.length-1].split("#");
+                    pvalue = split[split.length-1];
+            }
+
+
+            let v = dataArray[i].v;
+
+            if ( !data[pvalue] ) data[pvalue] = {};
+
+            if ( !data[pvalue].values ) data[pvalue].values = v;
+            else {
+                if (Array.isArray(data[pvalue].values))
+                    data[pvalue].values.push(v);
+                else 
+                    data[pvalue].values = [data[pvalue].values, v];
+            }
+
+            if ( !data[pvalue].propLabel ) data[pvalue].propLabel = dataArray[i].propLabel;
+        }
+
+
+        if(data.P486) {  // TODO // If there's at least a label then the response is good
+            let newState = { ...this.state };
+
+            newState.loading = false;
+            newState.data[lang] = data;
+
+            this.setState(newState);
+
+            console.log(this.state.data);
+        } else
+            this.setState({notFound : true});
+    }
+
     componentDidMount(){
 
-        // SELECT ?p ?v
-        // WHERE {
-        //     {
-        //         SELECT ?m WHERE {
-        //         ?m a dbo:Disease;
-        //         rdfs:label ?n .
-        //         FILTER( ?n="Psoriasis"@fr || ?n="Psoriasis"@en ) .
-        //         } limit 1
-        //     }
-        //     {
-        //         ?m ?p ?v
-        //         FILTER( (?p != rdfs:label && ?p != rdfs:comment && ?p != dbo:abstract) || lang(?v) = 'en' || lang(?v) = 'fr'  )
-        //     }
-        //     UNION
-        //     {
-        //         ?v ?p ?m
-        //     }
-        // }
+        fetchAllInfos("C00656484", "SARS-CoV-2", this.state.lang).then(r => this.parseData(r, this.state.lang));
+        fetchAllInfos("C00656484", "SARS-CoV-2", "en").then(r => this.parseData(r, "en")); //TODO on change lang
 
-        fetchAllInfos_en2("C00656484", "SARS-CoV-2", r => {
-            console.log("en fetch");
-            console.log(r);
-        });
-
-        fetch('http://dbpedia.org/sparql/?default-graph-uri=http%3A%2F%2Fdbpedia.org&query='
-            + 'SELECT ?p ?v WHERE { '
-                + '{ SELECT ?m WHERE { '
-                    + '?m a dbo:Disease; rdfs:label ?n . '
-                    + 'FILTER( ?n="' + this.state.diseaseName + '"@fr || ?n="' + this.state.diseaseName + '"@en ) . '
-                + '} limit 1 } '
-                + '{'
-                    + '?m ?p ?v . '
-                    + 'FILTER( (?p != rdfs:label %26%26 ?p != rdfs:comment %26%26 ?p!=dbo:abstract) %7C%7C lang(?v) = "en" %7C%7C lang(?v) = "fr" ) . '
-                + '}'
-                + 'UNION'
-                + '{'
-                    + '?v ?p ?m'
-                + '}'
-            + '}'
-            + '&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query'
-            ).then(r => {
-            return r.json();
-        }).then( r => {
-
-            let data = {};
-            let dataArray = r.results.bindings;
-            
-            console.log(dataArray);
-
-            for (let i = 0; i < dataArray.length; i++) {
-                
-                let p = dataArray[i].p;
-                let pvalue = p.value;
-                if (p.type === "uri") { 
-                     let split = p.value.split("/");
-                     split = split[split.length-1].split("#");
-                     pvalue = split[split.length-1];
-                }
-
-                let v = dataArray[i].v;
-                if (!data[pvalue] || v["xml:lang"] === "fr")
-                    data[pvalue] = v; // = v;
-                else if (!data[pvalue]["xml:lang"])
-                    if (Array.isArray(data[pvalue]))
-                        data[pvalue].push(v);
-                    else 
-                        data[pvalue] = [data[pvalue], v];
-            }
-            if(data.label) { // If there's at least a label then the response is good
-                this.setState({
-                    loading: false,
-                    data: data
-                });
-                console.log(this.state.data);
-            } else
-                this.setState({notFound : true});
-        }).catch(function(error) {
-            console.log('Il y a eu un problème avec l\'opération fetch: ' + error.message);
-            this.setState({notFound : true});
-        });
     }
 
     render() {
+        /*
         let dataComponent;
         
         if (!this.state.notFound) {
@@ -137,9 +108,9 @@ class Disease extends Component {
             } else dataComponent = <p>Loading...</p>;
         } else {
             
-        }
+        }*/
         
-        return(
+        return(/*
             <React.Fragment>
                 <div className="disease-container">
                     <div className="disease-header">
@@ -150,7 +121,7 @@ class Disease extends Component {
                         <button className="disease-newResearch-button" onClick={() => this.props.history.push("/")} >New Research</button>
                     </div>
                 </div>
-            </React.Fragment>
+            </React.Fragment>*/ <div>ok</div>
         );
     }
 }

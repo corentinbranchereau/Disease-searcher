@@ -32,102 +32,9 @@ export async function fetchByVirusName (virusName, onResultsFound)  {
     }
   }
 
-export async function fetchAllInfos_en(id, name, onResultsFound)  {
-  try{
-    const myFetcher = new SparqlEndpointFetcher();
-    const bindingsStream = await myFetcher.fetchBindings(
-    'https://query.wikidata.org/sparql', 
-    `SELECT DISTINCT ?m ?p ?propLabel ?v WHERE {
 
-      { 
-        ?m wdt:P486 ?c .
-        FILTER( ?c = "`+ id +`" ).
-      }
-      UNION
-      {
-        ?m rdfs:label "`+ name +`"@en;
-      }
-      UNION
-      {
-        ?m skos:altLabel "`+ name +`"@en.
-      }
-      
-      
-      { ?m ?p ?v . } MINUS {
-        ?m ?p ?v
-        FILTER( LANG(?v) != "" && !LANGMATCHES(LANG(?v), "en") ) .
-      }
-      
-      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-      
-      OPTIONAL {
-        ?prop wikibase:directClaim ?p .
-        ?prop rdfs:label ?propLabel.
-        filter(lang(?propLabel) = "en").
-      }
-    
-    }
-    `
-    
-    );
-    bindingsStream.on('data', (bindings) => {
-        onResultsFound(bindings);
-    });
-  }catch(err){
-    console.log("somethin went wrong", err);
-  }
-}
-
-export async function fetchAllInfos_fr (id, name, onResultsFound)  {
-  try{
-    const myFetcher = new SparqlEndpointFetcher();
-    const bindingsStream = await myFetcher.fetchBindings(
-    'https://dbpedia.org/sparql', 
-    `
-    SELECT DISTINCT ?m ?p ?propLabel ?v WHERE {
-
-      { 
-        ?m wdt:P486 ?c .
-        FILTER( ?c = "`+ id +`" ).
-      }
-      UNION
-      {
-        ?m rdfs:label "`+ name +`"@en;
-      }
-      UNION
-      {
-        ?m skos:altLabel "`+ name +`"@en.
-      }
-      
-      
-      { ?m ?p ?v . } MINUS {
-        ?m ?p ?v
-        FILTER( LANG(?v) != "" && !LANGMATCHES(LANG(?v), "fr") ) .
-      }
-      
-      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-      
-      OPTIONAL {
-        ?prop wikibase:directClaim ?p .
-        ?prop rdfs:label ?propLabel.
-        filter(lang(?propLabel) = "fr").
-      }
-    
-    }
-    `
-    
-    );
-    bindingsStream.on('data', (bindings) => {
-        onResultsFound(bindings);
-    });
-  }catch(err){
-    console.log("somethin went wrong", err);
-  }
-}
-
-
-export function fetchAllInfos_en2( id, name) {
-  let sparqlQuery = `SELECT DISTINCT ?m ?p ?propLabel ?v WHERE {
+export function fetchAllInfos( id, name, lang ) {
+  const sparqlQuery = `SELECT DISTINCT ?m ?p ?propLabel ?v WHERE {
 
     { 
       ?m wdt:P486 ?c .
@@ -145,7 +52,7 @@ export function fetchAllInfos_en2( id, name) {
     
     { ?m ?p ?v . } MINUS {
       ?m ?p ?v
-      FILTER( LANG(?v) != "" && !LANGMATCHES(LANG(?v), "en") ) .
+      FILTER( LANG(?v) != "" && !LANGMATCHES(LANG(?v), "`+lang+`") ) .
     }
     
     SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
@@ -153,7 +60,7 @@ export function fetchAllInfos_en2( id, name) {
     OPTIONAL {
       ?prop wikibase:directClaim ?p .
       ?prop rdfs:label ?propLabel.
-      filter(lang(?propLabel) = "en").
+      filter(lang(?propLabel) = "`+lang+`").
     }
   
   }`;
@@ -161,5 +68,5 @@ export function fetchAllInfos_en2( id, name) {
   const fullUrl = endpointUrl_wikidata + '?query=' + encodeURIComponent( sparqlQuery );
   const headers = { 'Accept': 'application/sparql-results+json' };
 
-  return fetch( fullUrl, { headers } ).then( body => body.json() );
+  return fetch( fullUrl, { headers } ).then( body => body.json() ).then( r => r.results.bindings);
 }
