@@ -1,4 +1,5 @@
 import React,{Component} from 'react';
+import {fetchAllInfos_en2} from '../requests/Requests'
 
 import "./Disease.css";
 
@@ -34,6 +35,11 @@ class Disease extends Component {
         //         ?v ?p ?m
         //     }
         // }
+
+        fetchAllInfos_en2("C00656484", "SARS-CoV-2", r => {
+            console.log("en fetch");
+            console.log(r);
+        });
 
         fetch('http://dbpedia.org/sparql/?default-graph-uri=http%3A%2F%2Fdbpedia.org&query='
             + 'SELECT ?p ?v WHERE { '
