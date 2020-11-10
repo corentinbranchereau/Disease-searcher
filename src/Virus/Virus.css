@@ -2,26 +2,133 @@
 	position: absolute;
 	right: 20px;
 	top: 15px;
-	width: 0.8em;
-	height: auto;
-}
-
-table {
-	width: 90%;
-	border: 1px solid black;
-	border-collapse: collapse;
-	margin: 4em auto 2em auto;
-}
-
-td {
-	border: 1px solid black;
-}
-td:first-child,
-td.img-td {
-	text-align: center;
 }
 
 img {
-	max-width: 40%;
-	max-height: auto;
+	width: 60%;
+	height: auto;
+}
+
+.grid-container {
+	display: grid;
+	max-width: 100%;
+	grid-template-columns: auto auto auto auto;
+	grid-template-rows: min-content;
+}
+
+dt,
+dd {
+	background-color: rgba(255, 255, 255, 0.8);
+	text-align: justify;
+	padding: 20px;
+	font-size: 20px;
+	margin: 0;
+	border-bottom: 1px dotted #abb2bf;
+}
+
+dt {
+	grid-column: span 1;
+}
+
+dd {
+	grid-column: span 3;
+}
+
+.sm-item {
+	grid-column: span 1;
+}
+
+.info-table {
+	border: 1px solid black;
+	width: 90%;
+	margin: auto auto auto auto;
+}
+
+.info-table-body {
+	padding: 0 1em 0 1em;
+}
+
+.info-table-header h1 {
+	background-color: #21252b;
+	color: white;
+	text-align: left;
+	font-size: 1.5em;
+	padding: 0.5em;
+	margin: 0;
+}
+
+.header {
+	margin: 0em auto 1em auto;
+	max-width: 90%;
+	height: auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	box-sizing: border-box;
+}
+
+.header h1 {
+	margin: 0;
+}
+
+.header img {
+	width: 20%;
+}
+
+.no-bottom-border {
+	border-bottom: none;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap");
+
+nav {
+	position: sticky;
+	top: 0px;
+	background-color: #262a2b;
+	color: white;
+	font-family: "Rubik", sans-serif;
+	font-size: 15px;
+	margin-bottom: 1em;
+}
+
+#nav-container {
+	height: 170px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: left;
+	padding: 0em 2.5em 0em 2.5em;
+}
+
+#nav-text:hover {
+	text-shadow: 1px 1px 3px white;
+	cursor: pointer;
+}
+
+#logo {
+	width: 220px;
+}
+
+#logo:hover {
+	cursor: pointer;
+	-webkit-animation: spin 6s linear infinite;
+	-moz-animation: spin 6s linear infinite;
+	animation: spin 6s linear infinite;
+}
+
+@-moz-keyframes spin {
+	100% {
+		-moz-transform: rotate(360deg);
+	}
+}
+@-webkit-keyframes spin {
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+@keyframes spin {
+	100% {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
 }
