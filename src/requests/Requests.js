@@ -2,12 +2,11 @@
 
 export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
 	try {
-		let requestUrl =
-			"https://id.nlm.nih.gov/mesh/sparql?query=";
+		let requestUrl = "https://id.nlm.nih.gov/mesh/sparql?query=";
 		let suffixUrl =
 			"&format=JSON&year=current&limit=1000&offset=0&inference=true";
 		let query =
-            `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+			`PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -35,7 +34,7 @@ export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
 			`","i")).
             }
             ORDER BY ?dId ?mId`;
-		fetch(requestUrl + query + suffixUrl)
+		fetch(requestUrl + encodeURI(query) + suffixUrl)
 			.then((res) => res.json())
 			.then(
 				(result) => {
@@ -49,7 +48,6 @@ export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
 		console.log("somethin went wrong", err);
 	}
 }
-
 
 export async function fetchSearchResultsDisease(userEntry, onResultsFound) {
 	try {

@@ -1,7 +1,7 @@
 import React from "react";
 import { fetchSearchResultsDisease } from "../requests/Requests";
 import { fetchSearchResultsVirus } from "../requests/Requests";
-import { fetchSearchResultsFromMesh } from "../requests/Requests"
+import { fetchSearchResultsFromMesh } from "../requests/Requests";
 import "./Search.css";
 import logo from "../logo2.svg";
 
@@ -19,10 +19,10 @@ class Search extends React.Component {
 		};
 	}
 
-	fetchData = () => {
+	/*fetchData = () => {
 		
-		fetchSearchResultsFromMesh(this.state.query, this.handleResults);
-		/*
+		fetchSearchResultsFromMesh(this.state.query, this.handleResults);*/
+
 	fetchData = (valueToSearch) => {
 		if (this.state.diseaseChecked && this.state.virusChecked) {
 			fetchSearchResultsDisease(valueToSearch, this.handleResults);
@@ -32,7 +32,6 @@ class Search extends React.Component {
 		} else if (this.state.virusChecked) {
 			fetchSearchResultsVirus(valueToSearch, this.handleResults);
 		}
-		*/
 	};
 
 	handleResults = (results, queryResponded) => {
@@ -87,12 +86,12 @@ class Search extends React.Component {
 		if (this.state.searchResults) {
 			let searchResultsFiltered = this.state.searchResults.sort(
 				(a, b) => {
-					return a.label.value < b.label.value;
+					return a.nameEn.value < b.nameEn.value;
 				}
 			);
 			resultsToPrint = searchResultsFiltered.map((result) => {
-				let name = result.label.value;
-				let comment =  result.comment.value;
+				let name = result.nameEn.value;
+				let comment = result.commentEn.value;
 				let subStringSize = 200;
 				if (name) {
 					return (
@@ -115,15 +114,29 @@ class Search extends React.Component {
 			});
 			if (this.state.typing && this.state.query !== "") {
 				resultsSuggestions = searchResultsFiltered.map((result) => {
-					let nameEN = result.nameEn.value;
-					let index = nameEN.indexOf(this.state.query);
+					let nameEN = result.nameEn.value.toLowerCase();
+					let recherche = this.state.query.toLowerCase();
+					let index = nameEN.indexOf(nameEN);
 					let wordList;
 					if (index !== -1) {
-						wordList = result;
+						wordList = nameEN.split(this.state.query, 2);
+						console.log(wordList);
+						return (
+							<div className="suggestion-single-result">
+								{wordList[0]}
+								<span style={{ fontWeight: 900 }}>
+									{this.state.query}
+								</span>
+								{wordList[1]}
+							</div>
+						);
+					} else {
+						return (
+							<div className="suggestion-single-result">
+								{nameEN}
+							</div>
+						);
 					}
-					return (
-						<div className="suggestion-single-result">{nameEN}</div>
-					);
 				});
 			}
 		}
