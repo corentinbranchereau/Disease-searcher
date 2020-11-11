@@ -33,37 +33,50 @@ export async function fetchByVirusName (virusName, onResultsFound)  {
   }
 
 
-export function fetchAllInfos( id, name, lang ) {
-  const sparqlQuery = `SELECT DISTINCT ?m ?p ?propLabel ?v WHERE {
+export function fetchAllInfos( idD, idM, name, lang ) {
+  //TODO Vérifier les caratères spéciaux dans id et name
 
-    { 
-      ?m wdt:P486 ?c .
-      FILTER( ?c = "`+id+`" ).
-    }
-    UNION
-    {
-      ?m rdfs:label "`+name+`"@en;
-    }
-    UNION
-    {
-      ?m skos:altLabel "`+name+`"@en.
-    }
+  const sparqlQuery = `SELECT DISTINCT ?p ?propLabel ?v WHERE {
     
-    
-    { ?m ?p ?v . } MINUS {
-      ?m ?p ?v
-      FILTER( LANG(?v) != "" && !LANGMATCHES(LANG(?v), "`+lang+`") ) .
-    }
-    
-    SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-    
-    OPTIONAL {
-      ?prop wikibase:directClaim ?p .
-      ?prop rdfs:label ?propLabel.
-      filter(lang(?propLabel) = "`+lang+`").
-    }
+  {
+
+    SELECT ?m WHERE {
+      { 
+        ?m wdt:P486 ?a .
+        FILTER( ?a = "` + idD + `" ).
+      }
+      UNION
+      { 
+        ?m wdt:P6694 ?b .
+        FILTER( ?b = "` + idM + `" ).
+      }
+      UNION
+      {
+        ?m rdfs:label "` + name + `"@en
+      }
+      UNION
+      {
+        ?m skos:altLabel "` + name + `"@en.
+      } 
+    } ORDER BY desc(?a) desc(?b) ?m LIMIT 1
+
+  }
   
-  }`;
+  OPTIONAL {
+  { ?m ?p ?v . } MINUS {
+  ?m ?p ?v
+  FILTER( LANG(?v) != "" && !LANGMATCHES(LANG(?v), "`+lang+`") ) .
+  } }
+  
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+  
+  OPTIONAL {
+    ?prop wikibase:directClaim ?p .
+    ?prop rdfs:label ?propLabel.
+    filter(lang(?propLabel) = "`+lang+`").
+  }
+
+  } ORDER BY ?m ?p`;
 
   const fullUrl = endpointUrl_wikidata + '?query=' + encodeURIComponent( sparqlQuery );
   const headers = { 'Accept': 'application/sparql-results+json' };
