@@ -3,6 +3,7 @@ import { fetchAllInfos } from "../requests/Requests";
 import logo from "../logo2.svg";
 
 import "./Entity.css";
+import "./loading.css";
 
 class Entity extends Component {
 	constructor(props) {
@@ -125,7 +126,7 @@ class Entity extends Component {
 	render() {
 		let infos = [];
 		if (this.state.loading) {
-			return <h1>Chargement des ressources</h1>;
+			return <div className="bb"></div>;
 		} else if (this.state.notFound) {
 			return <h1>Résultats non trouvés</h1>;
 		} else {
