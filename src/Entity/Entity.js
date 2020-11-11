@@ -125,27 +125,40 @@ class Entity extends Component {
 			el.classList.remove("no-bottom-border");
 		});
 
-		let dtArray = document.getElementsByTagName("dt");
-		let ddArray = document.getElementsByTagName("dd");
-		let lastLargeItemIndex;
-		for (let i = dtArray.length - 1; i >= 0; i--) {
-			if (!dtArray[i].classList.contains("sm-item")) {
-				lastLargeItemIndex = i;
-				break;
+		let dlArray = Array.from(document.getElementsByTagName("dl"));
+
+		dlArray.forEach((dl) => {
+			let dtArray = [];
+			let ddArray = [];
+
+			dl.childNodes.forEach((child) => {
+				if (child.tagName === "DT") {
+					dtArray.push(child);
+				} else if (child.tagName === "DD") {
+					ddArray.push(child);
+				}
+			});
+
+			let lastLargeItemIndex;
+			for (let i = dtArray.length - 1; i >= 0; i--) {
+				if (!dtArray[i].classList.contains("sm-item")) {
+					lastLargeItemIndex = i;
+					break;
+				}
 			}
-		}
-		if (
-			lastLargeItemIndex === dtArray.length - 1 ||
-			(dtArray.length - 1 - lastLargeItemIndex) % 2 !== 0
-		) {
-			dtArray[dtArray.length - 1].classList.add("no-bottom-border");
-			ddArray[dtArray.length - 1].classList.add("no-bottom-border");
-		} else {
-			dtArray[dtArray.length - 1].classList.add("no-bottom-border");
-			ddArray[dtArray.length - 1].classList.add("no-bottom-border");
-			dtArray[dtArray.length - 2].classList.add("no-bottom-border");
-			ddArray[dtArray.length - 2].classList.add("no-bottom-border");
-		}
+			if (
+				lastLargeItemIndex === dtArray.length - 1 ||
+				(dtArray.length - 1 - lastLargeItemIndex) % 2 !== 0
+			) {
+				dtArray[dtArray.length - 1].classList.add("no-bottom-border");
+				ddArray[dtArray.length - 1].classList.add("no-bottom-border");
+			} else {
+				dtArray[dtArray.length - 1].classList.add("no-bottom-border");
+				ddArray[dtArray.length - 1].classList.add("no-bottom-border");
+				dtArray[dtArray.length - 2].classList.add("no-bottom-border");
+				ddArray[dtArray.length - 2].classList.add("no-bottom-border");
+			}
+		});
 	}
 
 	componentDidUpdate() {
