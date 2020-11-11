@@ -8,6 +8,7 @@ import "./loading.css";
 class Entity extends Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
 			loading: true, // true if we fetch the results
 			entityIdD: this.props.match.params.idD, // url param : mesh id D
@@ -17,6 +18,8 @@ class Entity extends Component {
 			notFound: false, // if error from the request
 			language: "fr", // default language
 			homepageLink: "http://localhost:3000",
+			titlesTablesFrench: ["AUTRES INFORMATIONS"],
+			titlesTablesEnglish: ["OTHERS INFORMATIONS"],
 		};
 	}
 
@@ -50,12 +53,12 @@ class Entity extends Component {
 				data[pvalue].propLabel = dataArray[i].propLabel;
 		}
 
-		if (data.P105) {
+		if (true) {
 			// TODO // If there's at least a label then the response is good
 			let newData = { ...this.state.data };
 			newData[lang] = data;
 
-			this.setState({ data: newData, loading: false, language: lang});
+			this.setState({ data: newData, loading: false, language: lang });
 
 			//console.log(this.state.data);
 		} else this.setState({ notFound: true });
@@ -70,9 +73,7 @@ class Entity extends Component {
 				this.state.entityIdM,
 				this.state.entityName,
 				newLanguage
-			).then((r) =>
-				this.parseData(r, newLanguage)
-			);
+			).then((r) => this.parseData(r, newLanguage));
 		} else this.setState({ language: newLanguage });
 	};
 
@@ -130,7 +131,10 @@ class Entity extends Component {
 	}
 
 	render() {
-		let infos = [];
+		let OthersInfos = [];
+
+		let IdentificationInfos = [];
+
 		if (this.state.loading) {
 			return <div className="bb"></div>;
 		} else if (this.state.notFound) {
@@ -146,14 +150,28 @@ class Entity extends Component {
 				let infoTag;
 				let infoValues;
 
+				let subjectInfo = 0;
+
 				if (key.startsWith("P")) {
 					for (let i = 0; i < value.values.length; i++) {
+						if (
+							value.values[i].value.includes("ID") ||
+							value.values[i].value.includes("identifiant")
+						) {
+							subjectInfo = 1;
+						}
 						infoValuesArray.push(
 							<p key={key + i}>{value.values[i].value}</p>
 						);
 					}
 
 					if (value.propLabel) {
+						if (
+							value.propLabel.value.includes("ID") ||
+							value.propLabel.value.includes("identifiant")
+						) {
+							subjectInfo = 1;
+						}
 						infoTag = <dt key={key}>{value.propLabel.value}</dt>;
 					} else {
 						infoTag = <dt key={key}>{key}</dt>;
@@ -179,15 +197,36 @@ class Entity extends Component {
 					);
 				}
 
-				infos.push(infoTag);
-				infos.push(infoValues);
+				if (
+					key.includes("ID") ||
+					key.includes("identifiant") ||
+					subjectInfo == 1
+				) {
+					IdentificationInfos.push(infoTag);
+					IdentificationInfos.push(infoValues);
+				} else {
+					OthersInfos.push(infoTag);
+					OthersInfos.push(infoValues);
+				}
 			}
 
-			let infoList = React.createElement(
+			let infoListOthers = React.createElement(
 				"dl",
 				{ className: "grid-container" },
-				infos
+				OthersInfos
 			);
+
+			let infoListIdentification = React.createElement(
+				"dl",
+				{ className: "grid-container" },
+				IdentificationInfos
+			);
+
+			let titles;
+
+			this.state.language === "fr"
+				? (titles = this.state.titlesTablesFrench)
+				: (titles = this.state.titlesTablesEnglish);
 
 			return (
 				<React.Fragment>
@@ -221,7 +260,16 @@ class Entity extends Component {
 						<div className="info-table-header">
 							<h1>IDENTIFICATION</h1>
 						</div>
-						<div className="info-table-body">{infoList}</div>
+						<div className="info-table-body">
+							{infoListIdentification}
+						</div>
+					</div>
+
+					<div className="info-table">
+						<div className="info-table-header">
+							<h1>{titles[0]}</h1>
+						</div>
+						<div className="info-table-body">{infoListOthers}</div>
 					</div>
 				</React.Fragment>
 			);
