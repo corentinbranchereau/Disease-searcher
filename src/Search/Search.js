@@ -1,6 +1,4 @@
 import React from "react";
-import { fetchSearchResultsDisease } from "../requests/Requests";
-import { fetchSearchResultsVirus } from "../requests/Requests";
 import { fetchSearchResultsFromMesh } from "../requests/Requests";
 import "./Search.css";
 import logo from "../logo2.svg";
@@ -16,14 +14,15 @@ class Search extends React.Component {
 			diseaseChecked: true, //define if the checkbox disease is checked or not
 			virusChecked: true, //define if the checkbox virus is checked or not
 			showOptions: false, // define if you can see the search options
+			loading: false, //defines if
 		};
 	}
 
-	/*fetchData = () => {
-		
-		fetchSearchResultsFromMesh(this.state.query, this.handleResults);*/
-
 	fetchData = (valueToSearch) => {
+		this.setState({ loading: true });
+		fetchSearchResultsFromMesh(valueToSearch, this.handleResults);
+
+		/*fetchData = () => {
 		if (this.state.diseaseChecked && this.state.virusChecked) {
 			fetchSearchResultsDisease(valueToSearch, this.handleResults);
 			fetchSearchResultsVirus(valueToSearch, this.handleResults);
@@ -31,29 +30,35 @@ class Search extends React.Component {
 			fetchSearchResultsDisease(valueToSearch, this.handleResults);
 		} else if (this.state.virusChecked) {
 			fetchSearchResultsVirus(valueToSearch, this.handleResults);
-		}
+		}*/
 	};
 
 	handleResults = (results, queryResponded) => {
 		if (queryResponded === this.state.query) {
+			this.setState({ loading: false });
 			//verifying that the response corresponds to the displayed search word
-			this.setState({ searchResults: [] });
-			results.map((result) => {
-				let tmpSearchResults = this.state.searchResults;
-				tmpSearchResults.push(result);
-				this.setState({ searchResults: tmpSearchResults });
-				return 1;
-			});
+			this.setState({ searchResults: results });
+			// results.map((result) => {
+			// 	let tmpSearchResults = this.state.searchResults;
+			// 	tmpSearchResults.push(result);
+			// 	this.setState({ searchResults: tmpSearchResults });
+			// 	return 1;
+			// });
 		}
 	};
 
 	handleInputChange = () => {
-		this.setState({ query: this.search.value });
-		this.fetchData(this.search.value);
+		this.setState({ query: this.search.value, searchResults: [] });
+		if (this.search.value === "") {
+			this.setState({ searching: false });
+		} else {
+			this.fetchData(this.search.value);
+		}
 	};
 	handleKeyDown = (event) => {
-		if (event.key === "Enter") {
+		if (event.key === "Enter" || event.key === "Unidentified") {
 			this.setState({ searching: true });
+			this.search.blur();
 		}
 	};
 
@@ -83,17 +88,24 @@ class Search extends React.Component {
 	render() {
 		let resultsToPrint;
 		let resultsSuggestions;
-		if (this.state.searchResults) {
+		if (this.state.searchResults.length > 0) {
 			let searchResultsFiltered = this.state.searchResults.sort(
 				(a, b) => {
-					return a.nameEn.value < b.nameEn.value;
+					let nameA = a.label.value.toLowerCase();
+					let nameB = b.label.value.toLowerCase();
+					let recherche = this.state.query.toLowerCase();
+					let indexA = nameA.indexOf(recherche);
+					let indexB = nameB.indexOf(recherche);
+					if (indexA < indexB) return -1;
+					if (indexA > indexB) return 1;
+					if (indexA === indexB) return 0;
 				}
 			);
 			resultsToPrint = searchResultsFiltered.map((result) => {
-				let name = result.nameEn.value;
-				let comment = result.commentEn.value;
+				let name = result.label.value;
+				let comment = result.comment.value;
 				let subStringSize = 200;
-				if (name) {
+				if (name && !this.state.loading) {
 					return (
 						<li className="disease" key={name}>
 							<h2>{name.charAt(0).toUpperCase()}</h2>
@@ -113,34 +125,47 @@ class Search extends React.Component {
 				return <React.Fragment />;
 			});
 			if (this.state.typing && this.state.query !== "") {
-				resultsSuggestions = searchResultsFiltered.map((result) => {
-					let nameEN = result.label.value.toLowerCase();
-					let recherche = this.state.query.toLowerCase();
-					let index = nameEN.indexOf(nameEN);
-					let wordList;
-					if (index !== -1) {
-						wordList = nameEN.split(this.state.query, 2);
-						console.log(wordList);
-						return (
-							<div className="suggestion-single-result">
-								{wordList[0]}
-								<span style={{ fontWeight: 900 }}>
-									{this.state.query}
-								</span>
-								{wordList[1]}
-							</div>
-						);
-					} else {
-						return (
-							<div className="suggestion-single-result">
-								{nameEN}
-							</div>
-						);
-					}
-				});
-			}
-		}
+				resultsSuggestions = searchResultsFiltered
+					.slice(0, 10)
+					.map((result) => {
+						if (result.label) {
+							let nameEN = result.label.value.toLowerCase();
+							let recherche = this.state.query.toLowerCase();
+							let index = nameEN.indexOf(recherche);
+							let wordList;
+							if (index !== -1) {
+								wordList = nameEN.split(this.state.query, 2);
+								return (
+									<option
+										// className="suggestion-single-result"
+										key={nameEN}
+										value={nameEN}
+									/>
 
+									// {wordList[0]}
+									// <span style={{ fontWeight: 900 }}>
+									// 	{this.state.query}
+									// </span>
+									// {wordList[1]}
+								);
+							} else {
+								return (
+									<option
+										// className="suggestion-single-result"
+										key={nameEN}
+										value={nameEN}
+									/>
+								);
+							}
+						}
+					});
+			}
+		} else {
+			let emptyArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+			resultsToPrint = emptyArray.map((empty) => {
+				return <li className="disease" key={empty}></li>;
+			});
+		}
 		return (
 			<React.Fragment>
 				<div
@@ -195,22 +220,35 @@ class Search extends React.Component {
 								value={this.state.value}
 								placeholder="Rechercher une maladie. ex: coronavirus"
 								autoComplete="off"
+								list="suggestion-results"
 								ref={(input) => (this.search = input)}
 								onKeyDown={this.handleKeyDown}
 								onChange={this.handleInputChange}
 								onFocus={() => this.handleTyping(true)}
 								onBlur={() => this.handleTyping(true)}
 							/>
-							<div
+							{this.state.loading &&
+							!this.state.searching &&
+							this.state.query !== "" ? (
+								<div className="lds-ellipsis">
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+								</div>
+							) : (
+								<React.Fragment />
+							)}
+							{/* <div
 								className="search-options"
 								onClick={this.handleOptionClick}
 							>
 								<span className="material-icons blue">
 									tune
 								</span>
-							</div>
+							</div> */}
 						</div>
-						<div
+						{/* <div
 							id={
 								this.state.showOptions
 									? "search-options-container"
@@ -241,21 +279,21 @@ class Search extends React.Component {
 									Virus
 								</label>
 							</label>
-						</div>
+						</div> */}
 					</div>
 				</div>
-				<div className="suggestion-results">{resultsSuggestions}</div>
+				<datalist id="suggestion-results" onClick={this.handleKeyDown}>
+					{resultsSuggestions}
+				</datalist>
 
 				<div className="results-container">
 					{this.state.searching &&
+					!this.state.loading &&
 					this.state.searchResults.length === 0 ? (
 						<h2 style={{ textAlign: "center" }}>
 							Pas de résultats
 						</h2>
-					) : (
-						<React.Fragment />
-					)}
-					{this.state.searching ? (
+					) : this.state.searching ? (
 						<ul className="tilesWrap">{resultsToPrint}</ul>
 					) : (
 						<React.Fragment />
