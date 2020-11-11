@@ -20,7 +20,7 @@ class Entity extends Component {
 	}
 
 	parseData = (dataArray, lang) => {
-		// console.log(dataArray);
+		//console.log(dataArray);
 
 		let data = {};
 
@@ -54,9 +54,9 @@ class Entity extends Component {
 			let newData = { ...this.state.data };
 			newData[lang] = data;
 
-			this.setState({ data: newData, loading: false });
+			this.setState({ data: newData, loading: false, language: lang});
 
-			// console.log(this.state.data);
+			//console.log(this.state.data);
 		} else this.setState({ notFound: true });
 	};
 
@@ -64,11 +64,15 @@ class Entity extends Component {
 		let newLanguage = this.state.language === "fr" ? "en" : "fr";
 		if (!this.state.data[newLanguage]) {
 			this.setState({ loading: true });
-			fetchAllInfos("C00656484", "SARS-CoV-2", newLanguage).then((r) =>
+			fetchAllInfos(
+				this.state.entityIdD,
+				this.state.entityIdM,
+				this.state.entityName,
+				newLanguage
+			).then((r) =>
 				this.parseData(r, newLanguage)
 			);
-		}
-		this.setState({ language: newLanguage });
+		} else this.setState({ language: newLanguage });
 	};
 
 	handleTitleClick = () => {
@@ -76,12 +80,14 @@ class Entity extends Component {
 	};
 
 	componentDidMount() {
+		let l = this.state.language;
 		fetchAllInfos(
-			"C00656484",
-			"SARS-CoV-2",
-			this.state.language
-		).then((r) => this.parseData(r, this.state.language));
-		// this.changeLanguage();
+			this.state.entityIdD,
+			this.state.entityIdM,
+			this.state.entityName,
+			l
+		).then((r) => this.parseData(r, l));
+		//this.changeLanguage();
 	}
 
 	adaptLastBorder() {

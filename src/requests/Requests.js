@@ -33,12 +33,19 @@ export async function fetchByVirusName (virusName, onResultsFound)  {
   }
 
 
-export function fetchAllInfos( id, name, lang ) {
+export function fetchAllInfos( idD, idM, name, lang ) {
+  //TODO Vérifier les caratères spéciaux dans id et name
+
   const sparqlQuery = `SELECT DISTINCT ?m ?p ?propLabel ?v WHERE {
 
     { 
       ?m wdt:P486 ?c .
-      FILTER( ?c = "`+id+`" ).
+      FILTER( ?c = "`+idD+`" ).
+    }
+    UNION
+    { 
+      ?m wdt:P6694 ?c .
+      FILTER( ?c = "`+idM+`" ).
     }
     UNION
     {
@@ -63,7 +70,7 @@ export function fetchAllInfos( id, name, lang ) {
       filter(lang(?propLabel) = "`+lang+`").
     }
   
-  }`;
+  } ORDER BY ?m ?p`;
 
   const fullUrl = endpointUrl_wikidata + '?query=' + encodeURIComponent( sparqlQuery );
   const headers = { 'Accept': 'application/sparql-results+json' };
