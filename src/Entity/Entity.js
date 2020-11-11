@@ -49,7 +49,7 @@ class Entity extends Component {
 				data[pvalue].propLabel = dataArray[i].propLabel;
 		}
 
-		if (data.P486) {
+		if (data.P105) {
 			// TODO // If there's at least a label then the response is good
 			let newData = { ...this.state.data };
 			newData[lang] = data;
