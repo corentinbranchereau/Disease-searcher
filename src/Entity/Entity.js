@@ -18,8 +18,32 @@ class Entity extends Component {
 			notFound: false, // if error from the request
 			language: "fr", // default language
 			homepageLink: "http://localhost:3000",
-			titlesTablesFrench: ["AUTRES INFORMATIONS"],
-			titlesTablesEnglish: ["OTHERS INFORMATIONS"],
+			titlesTablesFrench: [
+				"PRESENTATION GENERALE",
+				"AUTRES INFORMATIONS",
+			],
+			titlesTablesEnglish: ["GENERAL PRESENTATION", "OTHER INFORMATION"],
+			keywordsEN: [
+				["ID", "ICD", "MeSH tree code", "UMLS CUI", "DiseasesDB"],
+				[
+					"health specialty",
+					"subclass of",
+					"instance of",
+					"Commons category",
+					"altLabel",
+				],
+			],
+			keywordsFR: [
+				["identifiant", "UMLS CUI", "arborescence MeSH", "ICD", "CIM"],
+				[
+					"catégorie",
+					"nature de l'élément",
+					"spécialité médicale",
+					"sous-classe de",
+				],
+			],
+
+			indexSubject: -1,
 		};
 	}
 
@@ -130,10 +154,29 @@ class Entity extends Component {
 		}
 	}
 
+	identifySubject = (tag) => {
+		let keywords;
+
+		if (this.state.language == "fr") {
+			keywords = this.state.keywordsFR;
+		} else {
+			keywords = this.state.keywordsEN;
+		}
+
+		for (let i = 0; i < keywords.length; i++) {
+			for (let j = 0; j < keywords[i].length; j++) {
+				if (tag.includes(keywords[i][j])) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	};
+
 	render() {
 		let OthersInfos = [];
-
 		let IdentificationInfos = [];
+		let PresentationInfos = [];
 
 		if (this.state.loading) {
 			return <div className="bb"></div>;
@@ -149,29 +192,24 @@ class Entity extends Component {
 				let infoValuesArray = [];
 				let infoTag;
 				let infoValues;
-
-				let subjectInfo = 0;
+				let subject = -1;
 
 				if (key.startsWith("P")) {
 					for (let i = 0; i < value.values.length; i++) {
-						if (
-							value.values[i].value.includes("ID") ||
-							value.values[i].value.includes("identifiant")
-						) {
-							subjectInfo = 1;
-						}
 						infoValuesArray.push(
 							<p key={key + i}>{value.values[i].value}</p>
 						);
 					}
 
 					if (value.propLabel) {
-						if (
-							value.propLabel.value.includes("ID") ||
-							value.propLabel.value.includes("identifiant")
-						) {
-							subjectInfo = 1;
+						let subjectFound = this.identifySubject(
+							value.propLabel.value
+						);
+
+						if (subjectFound != -1) {
+							subject = subjectFound;
 						}
+
 						infoTag = <dt key={key}>{value.propLabel.value}</dt>;
 					} else {
 						infoTag = <dt key={key}>{key}</dt>;
@@ -197,16 +235,26 @@ class Entity extends Component {
 					);
 				}
 
-				if (
-					key.includes("ID") ||
-					key.includes("identifiant") ||
-					subjectInfo == 1
-				) {
-					IdentificationInfos.push(infoTag);
-					IdentificationInfos.push(infoValues);
-				} else {
-					OthersInfos.push(infoTag);
-					OthersInfos.push(infoValues);
+				let subjectFound = this.identifySubject(key);
+
+				if (subjectFound != -1) {
+					subject = subjectFound;
+				}
+
+				switch (subject) {
+					case 0:
+						IdentificationInfos.push(infoTag);
+						IdentificationInfos.push(infoValues);
+						break;
+
+					case 1:
+						PresentationInfos.push(infoTag);
+						PresentationInfos.push(infoValues);
+						break;
+
+					case -1:
+						OthersInfos.push(infoTag);
+						OthersInfos.push(infoValues);
 				}
 			}
 
@@ -220,6 +268,12 @@ class Entity extends Component {
 				"dl",
 				{ className: "grid-container" },
 				IdentificationInfos
+			);
+
+			let infoListPresentation = React.createElement(
+				"dl",
+				{ className: "grid-container" },
+				PresentationInfos
 			);
 
 			let titles;
@@ -256,6 +310,15 @@ class Entity extends Component {
 							</button>
 						</div>
 					</nav>
+
+					<div className="info-table">
+						<div className="info-table-header">
+							<h1>{titles[0]}</h1>
+						</div>
+						<div className="info-table-body">
+							{infoListPresentation}
+						</div>
+					</div>
 					<div className="info-table">
 						<div className="info-table-header">
 							<h1>IDENTIFICATION</h1>
@@ -267,7 +330,7 @@ class Entity extends Component {
 
 					<div className="info-table">
 						<div className="info-table-header">
-							<h1>{titles[0]}</h1>
+							<h1>{titles[1]}</h1>
 						</div>
 						<div className="info-table-body">{infoListOthers}</div>
 					</div>
