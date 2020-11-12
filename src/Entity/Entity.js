@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { fetchAllInfos } from "../requests/Requests";
+import { fetchAssociatedGenesOnDisgenet} from "../requests/Requests";
 import logo from "../logo2.svg";
 
 import "./Entity.css";
@@ -11,18 +12,22 @@ class Entity extends Component {
 
 		this.state = {
 			loading: true, // true if we fetch the results
+			loadingGenes: true, // true if we fetch the results
 			entityIdD: this.props.match.params.idD, // url param : mesh id D
 			entityIdM: this.props.match.params.idM, // url param : mesh id M
 			entityName: this.props.match.params.name, // url param : name/label
 			data: {}, // data parsed from the fetch
+			dataGenes: {}, //data parsed from disgenet genes fetch
 			notFound: false, // if error from the request
+			notFoundGenes: false, // if error from the request
 			language: "fr", // default language
 			homepageLink: "http://localhost:3000",
 			titlesTablesFrench: [
 				"PRESENTATION GENERALE",
 				"AUTRES INFORMATIONS",
+				"GENES ASSSOCIES"
 			],
-			titlesTablesEnglish: ["GENERAL PRESENTATION", "OTHER INFORMATION"],
+			titlesTablesEnglish: ["GENERAL PRESENTATION", "OTHER INFORMATION", "ASSOCIATED GENE"],
 			keywordsEN: [
 				["ID", "ICD", "MeSH tree code", "UMLS CUI", "DiseasesDB"],
 				[
@@ -56,7 +61,7 @@ class Entity extends Component {
 		};
 	}
 
-	parseData = (dataArray, lang) => {
+	parseDataAllInfos = (dataArray, lang) => {
 		let data = {};
 
 		for (let i = 0; i < dataArray.length; i++) {
@@ -109,6 +114,30 @@ class Entity extends Component {
 		} else this.setState({ notFound: true });
 	};
 
+	parseDataGenes = (dataArray) => {
+		let data = {};
+		for (let i = 0; i < dataArray.length; i++) {
+			let g = dataArray[i].gene;
+			let gvalue = g.value;
+			if (g.type === "uri") {
+				let split = g.value.split("/");
+				split = split[split.length - 1]
+				gvalue = split.toUpperCase();
+			}
+
+			let scoreValue = dataArray[i].scoreValue.value;
+
+			let desc = dataArray[i].description.value;
+			if(desc) desc = desc.substring(1);
+
+			data[gvalue] = [];
+			data[gvalue].push([scoreValue,desc]);
+
+		}
+		//console.log(data);
+		this.setState({ dataGenes: data, loadingGenes: false });
+	};
+
 	changeLanguage = () => {
 		let newLanguage = this.state.language === "fr" ? "en" : "fr";
 		if (!this.state.data[newLanguage]) {
@@ -118,7 +147,7 @@ class Entity extends Component {
 				this.state.entityIdM,
 				this.state.entityName,
 				newLanguage
-			).then((r) => this.parseData(r, newLanguage));
+			).then((r) => this.parseDataAllInfos(r, newLanguage));
 		} else this.setState({ language: newLanguage });
 	};
 
@@ -133,8 +162,9 @@ class Entity extends Component {
 			this.state.entityIdM,
 			this.state.entityName,
 			l
-		).then((r) => this.parseData(r, l));
+		).then((r) => this.parseDataAllInfos(r, l));
 		//this.changeLanguage();
+		fetchAssociatedGenesOnDisgenet("D011565").then((r) => this.parseDataGenes(r));
 	}
 
 	adaptLastBorder() {
@@ -227,6 +257,7 @@ class Entity extends Component {
 		let OthersInfos = [];
 		let IdentificationInfos = [];
 		let PresentationInfos = [];
+		let AssociatedGene = [];
 
 		if (this.state.loading) {
 			return <div className="bb"></div>;
@@ -237,6 +268,26 @@ class Entity extends Component {
 				this.state.language === "fr"
 					? this.state.data.fr
 					: this.state.data.en;
+
+			let dataGenes = this.state.dataGenes;
+
+			for(const [key, value] of Object.entries(dataGenes)){
+				let infoTag = (
+					<dt key={key} >
+						{key} - Score : {value[0][0]}
+					</dt>
+				);
+
+				let infoValues = (
+					<dd key = {key+"Def"}>
+						{value[0][1]}
+					</dd>
+				);
+
+				AssociatedGene.push(infoTag);
+				AssociatedGene.push(infoValues);
+
+			}
 
 			for (const [key, value] of Object.entries(data)) {
 				let infoValuesArray = [];
@@ -314,6 +365,7 @@ class Entity extends Component {
 						OthersInfos.push(infoTag);
 						OthersInfos.push(infoValues);
 				}
+
 			}
 
 			let infoListOthers = React.createElement(
@@ -339,6 +391,25 @@ class Entity extends Component {
 			this.state.language === "fr"
 				? (titles = this.state.titlesTablesFrench)
 				: (titles = this.state.titlesTablesEnglish);
+
+			let reactElementAssociatedGene = [];
+			if(this.state.loadingGenes){
+				reactElementAssociatedGene = null;
+			} else {
+				let infoAssociatedGene = React.createElement(
+					"dl",
+					{className : "grid-container"},
+					AssociatedGene
+				);
+				reactElementAssociatedGene =
+				<div className="info-table">
+					<div className="info-table-header">
+						<h1>{titles[2]}</h1>
+					</div>
+					<div className="info-table-body">{infoAssociatedGene}</div>
+				</div>;
+			}
+
 
 			return (
 				<React.Fragment>
@@ -392,6 +463,9 @@ class Entity extends Component {
 						</div>
 						<div className="info-table-body">{infoListOthers}</div>
 					</div>
+
+					{reactElementAssociatedGene}
+
 				</React.Fragment>
 			);
 		}
