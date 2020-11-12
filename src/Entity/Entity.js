@@ -31,6 +31,8 @@ class Entity extends Component {
 					"instance of",
 					"Commons category",
 					"altLabel",
+					"label",
+					"description",
 				],
 			],
 			keywordsFR: [
@@ -40,7 +42,14 @@ class Entity extends Component {
 					"nature de l'élément",
 					"spécialité médicale",
 					"sous-classe de",
+					"label",
+					"description",
 				],
+			],
+
+			formats: [
+				[".jpg", ".jpeg", ".png", ".gif", ".svg"],
+				[".mp4", ".wav"],
 			],
 
 			indexSubject: -1,
@@ -198,6 +207,22 @@ class Entity extends Component {
 		return -1;
 	};
 
+	identifyFormat = (url, key, index) => {
+		for (let i = 0; i < this.state.formats.length; i++) {
+			for (let j = 0; j < this.state.formats[i].length; j++) {
+				if (url.includes(this.state.formats[i][j])) {
+					switch (i) {
+						case 0:
+							return <img src={url} key={key + index}></img>;
+						case 1:
+							return <video src={url} key={key + index}></video>;
+					}
+				}
+			}
+		}
+		return <p key={key + index}>{url}</p>;
+	};
+
 	render() {
 		let OthersInfos = [];
 		let IdentificationInfos = [];
@@ -221,9 +246,13 @@ class Entity extends Component {
 
 				if (key.startsWith("P")) {
 					for (let i = 0; i < value.values.length; i++) {
-						infoValuesArray.push(
-							<p key={key + i}>{value.values[i].value}</p>
+						let balise = this.identifyFormat(
+							value.values[i].value,
+							key,
+							i
 						);
+
+						infoValuesArray.push(balise);
 					}
 
 					if (value.propLabel) {
@@ -247,9 +276,13 @@ class Entity extends Component {
 					);
 				} else {
 					for (let i = 0; i < value.values.length; i++) {
-						infoValuesArray.push(
-							<p key={key + i}>{value.values[i].value}</p>
+						let balise = this.identifyFormat(
+							value.values[i].value,
+							key,
+							i
 						);
+
+						infoValuesArray.push(balise);
 					}
 
 					infoTag = <dt key={key}>{key}</dt>;
