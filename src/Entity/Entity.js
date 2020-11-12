@@ -54,6 +54,8 @@ class Entity extends Component {
 
 			indexSubject: -1,
 		};
+
+		window.onscroll = this.handleScroll;
 	}
 
 	parseData = (dataArray, lang) => {
@@ -185,6 +187,7 @@ class Entity extends Component {
 	componentDidUpdate() {
 		if (!this.state.loading) {
 			this.adaptLastBorder();
+			this.highlightVisibleElement();
 		}
 	}
 
@@ -235,6 +238,41 @@ class Entity extends Component {
 				offset,
 			behavior: "smooth",
 		});
+		this.highlightVisibleElement();
+	};
+
+	highlightVisibleElement() {
+		let highlightedElement = document.querySelector(".highlight");
+		if (highlightedElement) {
+			highlightedElement.classList.remove("highlight");
+		}
+
+		let infoTables = Array.from(
+			document.getElementsByClassName("info-table")
+		);
+
+		let scrollPositions = new Array();
+
+		infoTables.forEach((table) => {
+			scrollPositions.push(table.getBoundingClientRect().top);
+		});
+
+		let indexHighlight = 0;
+		let navbar = document.getElementsByTagName("nav")[0];
+		let offset = navbar.offsetHeight + 40;
+		for (let i = scrollPositions.length - 1; i > 0; i--) {
+			if (scrollPositions[i] < offset) {
+				indexHighlight = i;
+				break;
+			}
+		}
+
+		let menuList = document.querySelectorAll("#menu li");
+		menuList[indexHighlight].classList.add("highlight");
+	}
+
+	handleScroll = () => {
+		this.highlightVisibleElement();
 	};
 
 	render() {
