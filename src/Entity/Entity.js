@@ -48,8 +48,6 @@ class Entity extends Component {
 	}
 
 	parseData = (dataArray, lang) => {
-		//console.log(dataArray);
-
 		let data = {};
 
 		for (let i = 0; i < dataArray.length; i++) {
@@ -64,13 +62,27 @@ class Entity extends Component {
 
 			let v = dataArray[i].v;
 
+			let vLabel = dataArray[i].vLabel;
+
+			if (vLabel.value && !vLabel.value.startsWith("statement")) {
+				v = vLabel;
+			}
+
+			if (v.type === "uri") {
+				continue;
+			}
+
 			if (!data[pvalue]) data[pvalue] = {};
 
-			if (!data[pvalue].values) data[pvalue].values = v;
-			else {
-				if (Array.isArray(data[pvalue].values))
+			if (!data[pvalue].values) {
+				data[pvalue].values = [];
+				data[pvalue].values.push(v);
+			} else {
+				if (Array.isArray(data[pvalue].values)) {
 					data[pvalue].values.push(v);
-				else data[pvalue].values = [data[pvalue].values, v];
+				} else {
+					data[pvalue].values = [data[pvalue].values, v];
+				}
 			}
 
 			if (!data[pvalue].propLabel)
