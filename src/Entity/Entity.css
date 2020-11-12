@@ -19,7 +19,8 @@ nav {
 	color: white;
 	font-family: "Rubik", sans-serif;
 	font-size: 15px;
-	margin-bottom: 1em;
+	z-index: 100;
+	border-bottom: 1px solid black;
 }
 
 #nav-container {
@@ -100,7 +101,7 @@ dd {
 }
 
 .info-table-header h1 {
-	background-color: #21252b;
+	background-color: #262a2b;
 	color: white;
 	text-align: left;
 	font-size: 1.5em;
@@ -110,4 +111,35 @@ dd {
 
 .no-bottom-border {
 	border-bottom: none;
+}
+
+#content-container {
+	display: flex;
+}
+
+#menu {
+	position: sticky;
+	top: 171px; /* nav height */
+	height: 100vh;
+	background-color: #262a2b;
+	padding: 1em 2em 1em 2em;
+	color: white;
+}
+
+#menu ul {
+	padding: 0;
+}
+
+#menu li {
+	margin: 1em 0em 1em 0em;
+	cursor: pointer;
+	list-style-type: none;
+}
+
+#menu li:hover {
+	color: rgb(0, 204, 255);
+}
+
+#info-table-container {
+	margin: auto;
 }

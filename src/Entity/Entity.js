@@ -19,10 +19,10 @@ class Entity extends Component {
 			language: "fr", // default language
 			homepageLink: "http://localhost:3000",
 			titlesTablesFrench: [
-				"PRESENTATION GENERALE",
-				"AUTRES INFORMATIONS",
+				"Présentation générale",
+				"Autres informations",
 			],
-			titlesTablesEnglish: ["GENERAL PRESENTATION", "OTHER INFORMATION"],
+			titlesTablesEnglish: ["General presentation", "Other informations"],
 			keywordsEN: [
 				["ID", "ICD", "MeSH tree code", "UMLS CUI", "DiseasesDB"],
 				[
@@ -223,6 +223,20 @@ class Entity extends Component {
 		return <p key={key + index}>{url}</p>;
 	};
 
+	handleMenuClick = (menuIndex) => {
+		let infoTables = document.getElementsByClassName("info-table");
+		let navbar = document.getElementsByTagName("nav")[0];
+		let offset = navbar.offsetHeight + 20;
+
+		window.scrollTo({
+			top:
+				infoTables[menuIndex].getBoundingClientRect().top +
+				window.scrollY -
+				offset,
+			behavior: "smooth",
+		});
+	};
+
 	render() {
 		let OthersInfos = [];
 		let IdentificationInfos = [];
@@ -369,28 +383,60 @@ class Entity extends Component {
 						</div>
 					</nav>
 
-					<div className="info-table">
-						<div className="info-table-header">
-							<h1>{titles[0]}</h1>
+					<div id="content-container">
+						<div id="menu">
+							<ul>
+								<li
+									onClick={() => {
+										this.handleMenuClick(0);
+									}}
+								>
+									{titles[0]}
+								</li>
+								<li
+									onClick={() => {
+										this.handleMenuClick(1);
+									}}
+								>
+									Identification
+								</li>
+								<li
+									onClick={() => {
+										this.handleMenuClick(2);
+									}}
+								>
+									{titles[1]}
+								</li>
+							</ul>
 						</div>
-						<div className="info-table-body">
-							{infoListPresentation}
-						</div>
-					</div>
-					<div className="info-table">
-						<div className="info-table-header">
-							<h1>IDENTIFICATION</h1>
-						</div>
-						<div className="info-table-body">
-							{infoListIdentification}
-						</div>
-					</div>
 
-					<div className="info-table">
-						<div className="info-table-header">
-							<h1>{titles[1]}</h1>
+						<div id="info-table-container">
+							<div className="info-table">
+								<div className="info-table-header">
+									<h1>{titles[0].toUpperCase()}</h1>
+								</div>
+								<div className="info-table-body">
+									{infoListPresentation}
+								</div>
+							</div>
+							<div className="info-table">
+								<div className="info-table-header">
+									<h1>IDENTIFICATION</h1>
+								</div>
+								<div className="info-table-body">
+									{infoListIdentification}
+								</div>
+							</div>
+
+							<div className="info-table">
+								<div className="info-table-header">
+									<h1>{titles[1].toUpperCase()}</h1>
+								</div>
+								<div className="info-table-body">
+									{infoListOthers}
+								</div>
+							</div>
 						</div>
-						<div className="info-table-body">{infoListOthers}</div>
 					</div>
 				</React.Fragment>
 			);
