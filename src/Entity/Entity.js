@@ -54,6 +54,7 @@ class Entity extends Component {
 
 			indexSubject: -1,
 			enableSubelementList: true,
+			subelementsCreated: { fr: false, en: false },
 		};
 
 		window.onscroll = this.handleScroll;
@@ -123,6 +124,9 @@ class Entity extends Component {
 				newLanguage
 			).then((r) => this.parseData(r, newLanguage));
 		} else this.setState({ language: newLanguage });
+		this.setState({
+			enableSubelementList: true,
+		});
 	};
 
 	handleTitleClick = () => {
@@ -188,7 +192,9 @@ class Entity extends Component {
 	componentDidUpdate() {
 		if (!this.state.loading) {
 			this.adaptLastBorder();
-			this.createSubelementLists();
+			if (!this.state.subelementsCreated[this.state.language]) {
+				this.createSubelementLists();
+			}
 			this.highlightVisibleElement();
 			if (this.state.enableSubelementList) {
 				this.displaySubelementList();
@@ -267,8 +273,12 @@ class Entity extends Component {
 			}
 		} else {
 			// click on a subelement
+
+			// get the dl element in the info-table
 			let infoTableDlElement =
 				infoTables[menuIndex].childNodes[1].childNodes[0];
+
+			// scroll to the child at index "subelementIndex"
 			window.scrollTo({
 				top:
 					infoTableDlElement.childNodes[
@@ -335,6 +345,9 @@ class Entity extends Component {
 				}
 			}
 		}
+		let subelementsCreated = this.state.subelementsCreated;
+		subelementsCreated[this.state.language] = true;
+		this.setState({ subelementsCreated: subelementsCreated });
 	}
 
 	displaySubelementList() {

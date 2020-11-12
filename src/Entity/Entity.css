@@ -150,6 +150,10 @@ dd {
 	color: rgb(0, 204, 255);
 }
 
+.subelement-list {
+	display: none;
+}
+
 .subelement-list li {
 	color: gray;
 }
