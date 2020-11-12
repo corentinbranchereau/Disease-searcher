@@ -124,6 +124,8 @@ dd {
 	background-color: #262a2b;
 	padding: 1em 2em 1em 2em;
 	color: white;
+	overflow-y: scroll;
+	width: 13vw;
 }
 
 #menu ul {
@@ -132,12 +134,12 @@ dd {
 
 #menu li {
 	margin: 1em 0em 1em 0em;
-	cursor: pointer;
 	list-style-type: none;
 }
 
-#menu li:hover {
+#menu p:hover {
 	color: rgb(0, 204, 255);
+	cursor: pointer;
 }
 
 #info-table-container {
@@ -146,4 +148,13 @@ dd {
 
 .highlight {
 	color: rgb(0, 204, 255);
+}
+
+.subelement-list li {
+	color: gray;
+}
+
+.subelement-list li:hover {
+	color: rgba(0, 204, 255, 0.5);
+	cursor: pointer;
 }

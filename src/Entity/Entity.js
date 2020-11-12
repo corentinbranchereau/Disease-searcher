@@ -53,6 +53,7 @@ class Entity extends Component {
 			],
 
 			indexSubject: -1,
+			enableSubelementList: true,
 		};
 
 		window.onscroll = this.handleScroll;
@@ -187,7 +188,11 @@ class Entity extends Component {
 	componentDidUpdate() {
 		if (!this.state.loading) {
 			this.adaptLastBorder();
+			this.createSubelementLists();
 			this.highlightVisibleElement();
+			if (this.state.enableSubelementList) {
+				this.displaySubelementList();
+			}
 		}
 	}
 
@@ -226,19 +231,53 @@ class Entity extends Component {
 		return <p key={key + index}>{url}</p>;
 	};
 
-	handleMenuClick = (menuIndex) => {
+	handleMenuClick = (menuIndex, subelementIndex) => {
 		let infoTables = document.getElementsByClassName("info-table");
 		let navbar = document.getElementsByTagName("nav")[0];
 		let offset = navbar.offsetHeight + 20;
 
-		window.scrollTo({
-			top:
-				infoTables[menuIndex].getBoundingClientRect().top +
-				window.scrollY -
-				offset,
-			behavior: "smooth",
-		});
-		this.highlightVisibleElement();
+		if (subelementIndex === -1) {
+			// click on a "title"
+			window.scrollTo({
+				top:
+					infoTables[menuIndex].getBoundingClientRect().top +
+					window.scrollY -
+					offset,
+			});
+
+			let clickedElementAlreadyHighlighted = this.highlightVisibleElement();
+			let subelementLists = Array.from(
+				document.getElementsByClassName("subelement-list")
+			);
+			let allSubelementListHidden = true;
+			for (let i = 0; i < subelementLists.length; i++) {
+				if (subelementLists[i].style.display !== "none") {
+					allSubelementListHidden = false;
+					break;
+				}
+			}
+			if (!clickedElementAlreadyHighlighted || allSubelementListHidden) {
+				this.setState({ enableSubelementList: true });
+				this.displaySubelementList();
+			} else {
+				this.setState({ enableSubelementList: false });
+				subelementLists.forEach((list) => {
+					list.style.display = "none";
+				});
+			}
+		} else {
+			// click on a subelement
+			let infoTableDlElement =
+				infoTables[menuIndex].childNodes[1].childNodes[0];
+			window.scrollTo({
+				top:
+					infoTableDlElement.childNodes[
+						subelementIndex
+					].getBoundingClientRect().top +
+					window.scrollY -
+					offset,
+			});
+		}
 	};
 
 	highlightVisibleElement() {
@@ -267,13 +306,52 @@ class Entity extends Component {
 			}
 		}
 
-		let menuList = document.querySelectorAll("#menu li");
+		let menuList = document.querySelectorAll("#menu .menu-element > p");
 		menuList[indexHighlight].classList.add("highlight");
+		return menuList[indexHighlight] === highlightedElement;
 	}
 
 	handleScroll = () => {
 		this.highlightVisibleElement();
+		if (this.state.enableSubelementList) {
+			this.displaySubelementList();
+		}
 	};
+
+	createSubelementLists() {
+		let dlElements = document.getElementsByTagName("dl");
+		let subelementLists = document.getElementsByClassName(
+			"subelement-list"
+		);
+
+		for (let i = 0; i < dlElements.length; i++) {
+			let dlChildNodes = dlElements[i].childNodes;
+			for (let j = 0; j < dlChildNodes.length; j++) {
+				if (dlChildNodes[j].tagName === "DT") {
+					let subelement = document.createElement("LI");
+					subelement.innerHTML = dlChildNodes[j].textContent;
+					subelement.onclick = () => this.handleMenuClick(i, j);
+					subelementLists[i].appendChild(subelement);
+				}
+			}
+		}
+	}
+
+	displaySubelementList() {
+		// First we hide all the subelement lists
+		let subelementLists = Array.from(
+			document.getElementsByClassName("subelement-list")
+		);
+		subelementLists.forEach((list) => {
+			list.style.display = "none";
+		});
+
+		// We display the list for which the "title" is highlighted
+		let subelementListToDisplay = document.querySelector(
+			".highlight ~ .subelement-list"
+		);
+		subelementListToDisplay.style.display = "inline";
+	}
 
 	render() {
 		let OthersInfos = [];
@@ -424,26 +502,35 @@ class Entity extends Component {
 					<div id="content-container">
 						<div id="menu">
 							<ul>
-								<li
-									onClick={() => {
-										this.handleMenuClick(0);
-									}}
-								>
-									{titles[0]}
+								<li class="menu-element">
+									<p
+										onClick={() => {
+											this.handleMenuClick(0, -1);
+										}}
+									>
+										{titles[0]}
+									</p>
+									<ul class="subelement-list"></ul>
 								</li>
-								<li
-									onClick={() => {
-										this.handleMenuClick(1);
-									}}
-								>
-									Identification
+								<li class="menu-element">
+									<p
+										onClick={() => {
+											this.handleMenuClick(1, -1);
+										}}
+									>
+										Identification
+									</p>
+									<ul class="subelement-list"></ul>
 								</li>
-								<li
-									onClick={() => {
-										this.handleMenuClick(2);
-									}}
-								>
-									{titles[1]}
+								<li class="menu-element">
+									<p
+										onClick={() => {
+											this.handleMenuClick(2, -1);
+										}}
+									>
+										{titles[1]}
+									</p>
+									<ul class="subelement-list"></ul>
 								</li>
 							</ul>
 						</div>
