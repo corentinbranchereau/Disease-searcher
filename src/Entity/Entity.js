@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { fetchAllInfos } from "../requests/Requests";
 import { fetchAssociatedGenesOnDisgenet} from "../requests/Requests";
+import { fetchAllInfosGenes } from "../requests/Requests";
 import logo from "../logo2.svg";
 
 import "./Entity.css";
@@ -13,11 +14,14 @@ class Entity extends Component {
 		this.state = {
 			loading: true, // true if we fetch the results
 			loadingGenes: true, // true if we fetch the results
+			loadingWikidata: true,
+			loadingDisgenet: true, // true if we fetch the results
 			entityIdD: this.props.match.params.idD, // url param : mesh id D
 			entityIdM: this.props.match.params.idM, // url param : mesh id M
 			entityName: this.props.match.params.name, // url param : name/label
 			data: {}, // data parsed from the fetch
 			dataGenes: {}, //data parsed from disgenet genes fetch
+			dataDisgenetDiseases: {},
 			notFound: false, // if error from the request
 			notFoundGenes: false, // if error from the request
 			language: "fr", // default language
@@ -29,7 +33,14 @@ class Entity extends Component {
 			],
 			titlesTablesEnglish: ["GENERAL PRESENTATION", "OTHER INFORMATION", "ASSOCIATED GENE"],
 			keywordsEN: [
-				["ID", "ICD", "MeSH tree code", "UMLS CUI", "DiseasesDB"],
+				[
+					"ID",
+					"ICD",
+					"MeSH tree code",
+					"UMLS CUI",
+					"DiseasesDB",
+					"PubMed Health",
+				],
 				[
 					"health specialty",
 					"subclass of",
@@ -41,7 +52,14 @@ class Entity extends Component {
 				],
 			],
 			keywordsFR: [
-				["identifiant", "UMLS CUI", "arborescence MeSH", "ICD", "CIM"],
+				[
+					"identifiant",
+					"UMLS CUI",
+					"arborescence MeSH",
+					"ICD",
+					"CIM",
+					"eMedicine",
+				],
 				[
 					"catégorie",
 					"nature de l'élément",
@@ -108,7 +126,11 @@ class Entity extends Component {
 			let newData = { ...this.state.data };
 			newData[lang] = data;
 
-			this.setState({ data: newData, loading: false, language: lang });
+			this.setState({
+				data: newData,
+				loadingWikidata: false,
+				language: lang,
+			});
 
 			//console.log(this.state.data);
 		} else this.setState({ notFound: true });
@@ -138,10 +160,49 @@ class Entity extends Component {
 		this.setState({ dataGenes: data, loadingGenes: false });
 	};
 
+	parseDataDisgenetSimilarDiseases = (dataArray) => {
+		let data = {};
+
+		for (let i = 0; i < dataArray.length; i++) {
+			let disease2 = dataArray[i].diseaseName2.value;
+
+			let geneName = dataArray[i].geneName.value;
+			let geneUri = dataArray[i].gene.value;
+
+			if (!data[disease2]) {
+				let urlDisease2 = dataArray[i].meshURL.value;
+
+				let partsURL = urlDisease2.split("/");
+				urlDisease2 = partsURL[partsURL.length - 1];
+
+				urlDisease2 =
+					"http://localhost:3000/entity/" +
+					disease2 +
+					"/" +
+					urlDisease2;
+
+				//console.log(urlDisease2);
+
+				data[disease2] = [];
+				data[disease2].push(urlDisease2);
+			}
+
+			data[disease2].push([geneUri, geneName]);
+		}
+
+		let newDataDisgenet = { ...this.state.dataDisgenetDiseases };
+		newDataDisgenet = data;
+
+		this.setState({
+			dataDisgenetDiseases: newDataDisgenet,
+			loadingDisgenet: false,
+		});
+	};
+
 	changeLanguage = () => {
 		let newLanguage = this.state.language === "fr" ? "en" : "fr";
 		if (!this.state.data[newLanguage]) {
-			this.setState({ loading: true });
+			this.setState({ loadingWikidata: true, loadingDisgenet: true });
 			fetchAllInfos(
 				this.state.entityIdD,
 				this.state.entityIdM,
@@ -163,6 +224,14 @@ class Entity extends Component {
 			this.state.entityName,
 			l
 		).then((r) => this.parseDataAllInfos(r, l));
+		).then((r) => this.parseData(r, l));
+
+		fetchAllInfosGenes(
+			this.state.entityIdD,
+			this.state.entityIdM,
+			this.state.entityName,
+			l
+		).then((r) => this.parseDataDisgenetSimilarDiseases(r));
 		//this.changeLanguage();
 		fetchAssociatedGenesOnDisgenet("D011565").then((r) => this.parseDataGenes(r));
 	}
@@ -213,7 +282,7 @@ class Entity extends Component {
 	}
 
 	componentDidUpdate() {
-		if (!this.state.loading) {
+		if (!this.state.loadingDisgenet && !this.state.loadingWikidata) {
 			this.adaptLastBorder();
 		}
 	}
@@ -259,7 +328,9 @@ class Entity extends Component {
 		let PresentationInfos = [];
 		let AssociatedGene = [];
 
-		if (this.state.loading) {
+		let DiseasesGenesInfos = [];
+
+		if (this.state.loadingDisgenet || this.state.loadingWikidata) {
 			return <div className="bb"></div>;
 		} else if (this.state.notFound) {
 			return <h1>Résultats non trouvés</h1>;
@@ -287,6 +358,36 @@ class Entity extends Component {
 				AssociatedGene.push(infoTag);
 				AssociatedGene.push(infoValues);
 
+			}
+
+			let dataDis = this.state.dataDisgenetDiseases;
+
+			for (const [key, value] of Object.entries(dataDis)) {
+				let infoValuesArray = [];
+
+				let infoTag = (
+					<dt key={key} href={value[0]}>
+						{key}
+					</dt>
+				);
+
+				for (let i = 1; i < value.length; i++) {
+					let balise = (
+						<p href={value[i][0]} key={key + i}>
+							{value[i][1]}
+						</p>
+					);
+					infoValuesArray.push(balise);
+				}
+
+				let infoValues = React.createElement(
+					"dd",
+					{ key: key + "Def" },
+					infoValuesArray
+				);
+
+				DiseasesGenesInfos.push(infoTag);
+				DiseasesGenesInfos.push(infoValues);
 			}
 
 			for (const [key, value] of Object.entries(data)) {
@@ -386,6 +487,12 @@ class Entity extends Component {
 				PresentationInfos
 			);
 
+			let infoListGenesDiseases = React.createElement(
+				"dl",
+				{ className: "grid-container" },
+				DiseasesGenesInfos
+			);
+
 			let titles;
 
 			this.state.language === "fr"
@@ -454,6 +561,15 @@ class Entity extends Component {
 						</div>
 						<div className="info-table-body">
 							{infoListIdentification}
+						</div>
+					</div>
+
+					<div className="info-table">
+						<div className="info-table-header">
+							<h1>SIMILAR DISEASES</h1>
+						</div>
+						<div className="info-table-body">
+							{infoListGenesDiseases}
 						</div>
 					</div>
 
