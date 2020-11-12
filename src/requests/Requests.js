@@ -2,6 +2,8 @@ import { SparqlEndpointFetcher } from "fetch-sparql-endpoint";
 
 const endpointUrl_wikidata = "https://query.wikidata.org/sparql";
 
+const endpointUrl_disgenet = "http://rdf.disgenet.org/sparql/";
+
 export async function fetchByVirusName(virusName, onResultsFound) {
 	try {
 		const myFetcher = new SparqlEndpointFetcher();
@@ -31,9 +33,46 @@ export async function fetchByVirusName(virusName, onResultsFound) {
 	}
 }
 
-export function fetchAllInfos(idD, idM, name, lang) {
+export function fetchAllInfosGenes(idD, idM, name, lang) {
 	//TODO Vérifier les caratères spéciaux dans id et name
 
+	const sparqlQueryDisgenet =
+		`
+  SELECT DISTINCT ?gene ?geneName ?disease2 ?diseaseName2 ?meshURL
+  WHERE {
+    ?gda sio:SIO_000628 ?disease,?gene .
+          ?disease skos:exactMatch <http://id.nlm.nih.gov/mesh/` +
+		idD +
+		`> .
+    ?gda2 sio:SIO_000628 ?disease2,?gene .
+    ?disease dcterms:title ?diseaseName .
+    ?disease2 dcterms:title ?diseaseName2 .
+          ?disease2 skos:exactMatch ?meshURL.
+  ?gene dcterms:title ?geneName.
+
+    FILTER regex(?gene, "ncbigene")
+    FILTER regex(?disease, "umls/id")
+    FILTER regex(?disease2, "umls/id")
+          FILTER regex(?meshURL, ".gov/mesh")
+    FILTER (?disease != ?disease2)
+    FILTER (?gda != ?gda2)
+  }
+  LIMIT 50
+`;
+
+	const fullUrl =
+		endpointUrl_disgenet +
+		"?query=" +
+		encodeURIComponent(sparqlQueryDisgenet);
+	const headers = { Accept: "application/sparql-results+json" };
+
+	return fetch(fullUrl, { headers })
+		.then((body) => body.json())
+		.then((r) => r.results.bindings);
+}
+
+export function fetchAllInfos(idD, idM, name, lang) {
+	//TODO Vérifier les caratères spéciaux dans id et name
 	const sparqlQuery =
 		`SELECT DISTINCT ?p ?propLabel ?v ?vLabel WHERE {
 
