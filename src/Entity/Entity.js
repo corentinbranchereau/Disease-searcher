@@ -733,6 +733,26 @@ class Entity extends Component {
 									</p>
 									<ul class="subelement-list"></ul>
 								</li>
+								<li className="menu-element">
+									<p
+										onClick={() => {
+											this.handleMenuClick(3, -1);
+										}}
+									>
+										{titles[2]}
+									</p>
+									<ul class="subelement-list"></ul>
+								</li>
+								<li className="menu-element">
+									<p
+										onClick={() => {
+											this.handleMenuClick(4, -1);
+										}}
+									>
+										{titles[3]}
+									</p>
+									<ul class="subelement-list"></ul>
+								</li>
 							</ul>
 						</div>
 
