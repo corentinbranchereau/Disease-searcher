@@ -148,7 +148,7 @@ class Entity extends Component {
 	};
 
 	parseDataGenes = (dataArray) => {
-		let data = {};
+		let data;
 		for (let i = 0; i < dataArray.length; i++) {
 			let g = dataArray[i].gene;
 			let gvalue = g.value;
@@ -162,26 +162,30 @@ class Entity extends Component {
 
 			let desc = dataArray[i].description.value;
 			if (desc) desc = desc.substring(1);
-
+			if(!data) data = {};
 			data[gvalue] = [];
 			data[gvalue].push([scoreValue, desc]);
 		}
+
 		console.log(data);
 		let empty = false;
-		if(this.state.loadingGenes && data.length===0){
+		if(this.state.loadingGenes && data===undefined){
 			empty = true;
+			data = {}
 		}
 		this.setState({ dataGenes: data, loadingGenes: false, emptyGenes : empty});
 	};
 
 	parseDataDisgenetSimilarDiseases = (dataArray) => {
-		let data = {};
+		let data;
 
 		for (let i = 0; i < dataArray.length; i++) {
 			let disease2 = dataArray[i].diseaseName2.value;
 
 			let geneName = dataArray[i].geneName.value;
 			let geneUri = dataArray[i].gene.value;
+
+			if(!data) data = {};
 
 			if (!data[disease2]) {
 				let urlDisease2 = dataArray[i].meshURL.value;
@@ -204,15 +208,13 @@ class Entity extends Component {
 			data[disease2].push([geneUri, geneName]);
 		}
 
-		let newDataDisgenet = { ...this.state.dataDisgenetDiseases };
-		newDataDisgenet = data;
-		console.log(data);
 		let empty = false;
-		if(this.state.loadingDisgenet && data.length===0){
+		if(this.state.loadingDisgenet && data === undefined){
 			empty = true;
+			data = {};
 		}
 		this.setState({
-			dataDisgenetDiseases: newDataDisgenet,
+			dataDisgenetDiseases: data,
 			loadingDisgenet: false,
 			emptyDisgenet: empty
 		});
@@ -656,8 +658,10 @@ class Entity extends Component {
 
 			let reactElementAssociatedGene = [];
 			if (this.state.emptyGenes) {
+				console.log("NULL ASSOCIATED GENES");
 				reactElementAssociatedGene = null;
 			} else {
+				console.log("NON NULL ASSOCIATED GENES");
 				let infoAssociatedGene = React.createElement(
 					"dl",
 					{ className: "grid-container" },
@@ -677,8 +681,10 @@ class Entity extends Component {
 
 			let reactElementSimilarDisease = [];
 			if (this.state.emptyDisgenet) {
+				console.log("NULL ASSOCIATED DISEASE");
 				reactElementSimilarDisease = null;
 			} else {
+				console.log("NON NULL ASSOCIATED DISEASE");
 				let infoListGenesDiseases = React.createElement(
 					"dl",
 					{ className: "grid-container" },
