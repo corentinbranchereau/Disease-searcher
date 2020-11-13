@@ -453,6 +453,21 @@ class Entity extends Component {
 		if (this.state.enableSubelementList) {
 			this.displaySubelementList();
 		}
+
+		let navbar = document.getElementsByTagName("nav");
+
+		if (navbar) {
+			if (window.scrollY >= 60) {
+				navbar[0].classList.add("minimized");
+				let menu = document.getElementById("menu");
+				console.log(menu);
+				menu.style.top = "76px";
+			} else {
+				navbar[0].classList.remove("minimized");
+				let menu = document.getElementById("menu");
+				menu.style.top = "171px";
+			}
+		}
 	};
 
 	createSubelementLists() {
