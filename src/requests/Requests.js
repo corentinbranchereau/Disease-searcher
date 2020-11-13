@@ -33,22 +33,31 @@ export async function fetchByVirusName(virusName, onResultsFound) {
 	}
 }
 
-export function fetchAllInfosGenes(idD) {
+export function fetchAllInfosGenes(idD, idM, name, lang) {
+	//TODO Vérifier les caratères spéciaux dans id et name
 
-	let meshId = "<"+"http://id.nlm.nih.gov/mesh/"+idD+">";
-	
-	const sparqlQueryDisgenet = `
- 		SELECT ?gene ?scoreValue (SAMPLE(?desc) AS ?description)
- 		WHERE {
- 			?disease skos:exactMatch "`+meshId+`".
-			?gda sio:SIO_000628 ?disease, ?gene;
-			sio:SIO_000216 ?score;
-			?dcterms:description ?desc.
-			?score sio:SIO_000300 ?scoreValue.
-			FILTER(?gene != ?disease).
-			FILTER(langmatches(?desc, "en")).
- 		} GROUP BY ?gene ?scoreValue ORDER BY DESC(?scoreValue) LIMIT 10
-	`;
+	const sparqlQueryDisgenet =
+		`
+  SELECT DISTINCT ?gene ?geneName ?disease2 ?diseaseName2 ?meshURL
+  WHERE {
+    ?gda sio:SIO_000628 ?disease,?gene .
+          ?disease skos:exactMatch <http://id.nlm.nih.gov/mesh/` +
+		idD +
+		`> .
+    ?gda2 sio:SIO_000628 ?disease2,?gene .
+    ?disease dcterms:title ?diseaseName .
+    ?disease2 dcterms:title ?diseaseName2 .
+          ?disease2 skos:exactMatch ?meshURL.
+  ?gene dcterms:title ?geneName.
+    FILTER regex(?gene, "ncbigene")
+    FILTER regex(?disease, "umls/id")
+    FILTER regex(?disease2, "umls/id")
+          FILTER regex(?meshURL, ".gov/mesh")
+    FILTER (?disease != ?disease2)
+    FILTER (?gda != ?gda2)
+  }
+  LIMIT 50
+`;
 
 	const fullUrl =
 		endpointUrl_disgenet +
@@ -60,6 +69,7 @@ export function fetchAllInfosGenes(idD) {
 		.then((body) => body.json())
 		.then((r) => r.results.bindings);
 }
+
 
 
 export function fetchAllInfos(idD, idM, name, lang) {

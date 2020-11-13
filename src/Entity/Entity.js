@@ -156,7 +156,7 @@ class Entity extends Component {
 			data[gvalue].push([scoreValue,desc]);
 
 		}
-		//console.log(data);
+		console.log(data);
 		this.setState({ dataGenes: data, loadingGenes: false });
 	};
 
@@ -192,6 +192,7 @@ class Entity extends Component {
 
 		let newDataDisgenet = { ...this.state.dataDisgenetDiseases };
 		newDataDisgenet = data;
+		console.log(data);
 
 		this.setState({
 			dataDisgenetDiseases: newDataDisgenet,
@@ -232,7 +233,7 @@ class Entity extends Component {
 			l
 		).then((r) => this.parseDataDisgenetSimilarDiseases(r));
 		//this.changeLanguage();
-		fetchAssociatedGenesOnDisgenet("D011565").then((r) => this.parseDataGenes(r));
+		fetchAssociatedGenesOnDisgenet(this.state.entityIdD).then((r) => this.parseDataGenes(r));
 	}
 
 	adaptLastBorder() {
@@ -281,7 +282,7 @@ class Entity extends Component {
 	}
 
 	componentDidUpdate() {
-		if (!this.state.loadingDisgenet && !this.state.loadingWikidata) {
+		if (!this.state.loadingDisgenet && !this.state.loadingWikidata && !this.state.loadingGenes) {
 			this.adaptLastBorder();
 		}
 	}
@@ -329,7 +330,7 @@ class Entity extends Component {
 
 		let DiseasesGenesInfos = [];
 
-		if (this.state.loadingDisgenet || this.state.loadingWikidata) {
+		if (this.state.loadingDisgenet || this.state.loadingWikidata || this.state.loadingGenes) {
 			return <div className="bb"></div>;
 		} else if (this.state.notFound) {
 			return <h1>Résultats non trouvés</h1>;
