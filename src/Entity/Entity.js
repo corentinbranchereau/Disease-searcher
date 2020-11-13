@@ -15,8 +15,8 @@ class Entity extends Component {
 			loadingGenes: true, // true if we fetch the results
 			loadingWikidata: true,
 			loadingDisgenet: true, // true if we fetch the results
-			emptyDisgenet : true,
-			emptyGenes : true,
+			emptyDisgenet: true,
+			emptyGenes: true,
 			entityIdD: this.props.match.params.idD, // url param : mesh id D
 			entityIdM: this.props.match.params.idM, // url param : mesh id M
 			entityName: this.props.match.params.name, // url param : name/label
@@ -168,10 +168,14 @@ class Entity extends Component {
 		}
 		console.log(data);
 		let empty = false;
-		if(this.state.loadingGenes && data.length===0){
+		if (this.state.loadingGenes && data.length === 0) {
 			empty = true;
 		}
-		this.setState({ dataGenes: data, loadingGenes: false, emptyGenes : empty});
+		this.setState({
+			dataGenes: data,
+			loadingGenes: false,
+			emptyGenes: empty,
+		});
 	};
 
 	parseDataDisgenetSimilarDiseases = (dataArray) => {
@@ -208,13 +212,13 @@ class Entity extends Component {
 		newDataDisgenet = data;
 		console.log(data);
 		let empty = false;
-		if(this.state.loadingDisgenet && data.length===0){
+		if (this.state.loadingDisgenet && data.length === 0) {
 			empty = true;
 		}
 		this.setState({
 			dataDisgenetDiseases: newDataDisgenet,
 			loadingDisgenet: false,
-			emptyDisgenet: empty
+			emptyDisgenet: empty,
 		});
 	};
 
@@ -290,12 +294,16 @@ class Entity extends Component {
 				}
 			}
 			if (
-				lastLargeItemIndex === dtArray.length - 1 ||
-				(dtArray.length - 1 - lastLargeItemIndex) % 2 !== 0
+				(lastLargeItemIndex === dtArray.length - 1 ||
+					(dtArray.length - 1 - lastLargeItemIndex) % 2 !== 0) &&
+				dtArray[dtArray.length - 1]
 			) {
 				dtArray[dtArray.length - 1].classList.add("no-bottom-border");
 				ddArray[dtArray.length - 1].classList.add("no-bottom-border");
-			} else {
+			} else if (
+				dtArray[dtArray.length - 1] &&
+				dtArray[dtArray.length - 2]
+			) {
 				dtArray[dtArray.length - 1].classList.add("no-bottom-border");
 				ddArray[dtArray.length - 1].classList.add("no-bottom-border");
 				dtArray[dtArray.length - 2].classList.add("no-bottom-border");
