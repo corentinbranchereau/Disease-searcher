@@ -161,8 +161,6 @@ class Entity extends Component {
 				loadingWikidata: false,
 				language: lang,
 			});
-
-			//console.log(this.state.data);
 		} else this.setState({ notFound: true });
 	};
 
@@ -216,7 +214,6 @@ class Entity extends Component {
 				urlDisease2 = partsURL[partsURL.length - 1];
 				urlDisease2 = "/entity/" + disease2 + "/" + urlDisease2;
 
-				//console.log(urlDisease2);
 				data[disease2] = [];
 				data[disease2].push(urlDisease2);
 			}
@@ -227,6 +224,8 @@ class Entity extends Component {
 
 		let max = 0;
 
+		let empty = true;
+
 		for (const [key, value] of Object.entries(data)) {
 			if (!dataOrder[data[key].length]) {
 				dataOrder[data[key].length] = {};
@@ -235,12 +234,12 @@ class Entity extends Component {
 			dataOrder[data[key].length][key] = value;
 			if (data[key].length > max) {
 				max = data[key].length;
+				empty = false;
 			}
 		}
 
 		data = dataOrder;
 
-		let empty = false;
 		if (this.state.loadingDisgenet && data === undefined) {
 			empty = true;
 			data = {};
@@ -256,7 +255,9 @@ class Entity extends Component {
 	changeLanguage = () => {
 		let newLanguage = this.state.language === "fr" ? "en" : "fr";
 		if (!this.state.data[newLanguage]) {
-			this.setState({ loadingWikidata: true, loadingDisgenet: true });
+			this.setState({
+				loadingWikidata: true,
+			});
 			fetchAllInfos(
 				this.state.entityIdD,
 				this.state.entityIdM,
@@ -658,7 +659,6 @@ class Entity extends Component {
 			}
 
 			let dataDis = this.state.dataDisgenetDiseases;
-
 			let NbDiseasesDisplayMax = 10;
 
 			infoValuesArray = [];
