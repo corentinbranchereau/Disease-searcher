@@ -15,8 +15,8 @@ class Entity extends Component {
 			loadingGenes: true, // true if we fetch the results
 			loadingWikidata: true,
 			loadingDisgenet: true, // true if we fetch the results
-			emptyDisgenet : true,
-			emptyGenes : true,
+			emptyDisgenet: true,
+			emptyGenes: true,
 			entityIdD: this.props.match.params.idD, // url param : mesh id D
 			entityIdM: this.props.match.params.idM, // url param : mesh id M
 			entityName: this.props.match.params.name, // url param : name/label
@@ -168,10 +168,14 @@ class Entity extends Component {
 		}
 		console.log(data);
 		let empty = false;
-		if(this.state.loadingGenes && data.length===0){
+		if (this.state.loadingGenes && data.length === 0) {
 			empty = true;
 		}
-		this.setState({ dataGenes: data, loadingGenes: false, emptyGenes : empty});
+		this.setState({
+			dataGenes: data,
+			loadingGenes: false,
+			emptyGenes: empty,
+		});
 	};
 
 	parseDataDisgenetSimilarDiseases = (dataArray) => {
@@ -189,11 +193,7 @@ class Entity extends Component {
 				let partsURL = urlDisease2.split("/");
 				urlDisease2 = partsURL[partsURL.length - 1];
 
-				urlDisease2 =
-					"http://localhost:3000/entity/" +
-					disease2 +
-					"/" +
-					urlDisease2;
+				urlDisease2 = "/entity/" + disease2 + "/" + urlDisease2;
 
 				//console.log(urlDisease2);
 
@@ -208,13 +208,13 @@ class Entity extends Component {
 		newDataDisgenet = data;
 		console.log(data);
 		let empty = false;
-		if(this.state.loadingDisgenet && data.length===0){
+		if (this.state.loadingDisgenet && data.length === 0) {
 			empty = true;
 		}
 		this.setState({
 			dataDisgenetDiseases: newDataDisgenet,
 			loadingDisgenet: false,
-			emptyDisgenet: empty
+			emptyDisgenet: empty,
 		});
 	};
 
@@ -247,12 +247,9 @@ class Entity extends Component {
 			l
 		).then((r) => this.parseDataAllInfos(r, l));
 
-		fetchAllInfosGenes(
-			this.state.entityIdD,
-			this.state.entityIdM,
-			this.state.entityName,
-			l
-		).then((r) => this.parseDataDisgenetSimilarDiseases(r));
+		fetchAllInfosGenes(this.state.entityIdD).then((r) =>
+			this.parseDataDisgenetSimilarDiseases(r)
+		);
 		//this.changeLanguage();
 		fetchAssociatedGenesOnDisgenet(this.state.entityIdD).then((r) =>
 			this.parseDataGenes(r)
@@ -290,12 +287,16 @@ class Entity extends Component {
 				}
 			}
 			if (
-				lastLargeItemIndex === dtArray.length - 1 ||
-				(dtArray.length - 1 - lastLargeItemIndex) % 2 !== 0
+				(lastLargeItemIndex === dtArray.length - 1 ||
+					(dtArray.length - 1 - lastLargeItemIndex) % 2 !== 0) &&
+				dtArray[dtArray.length - 1]
 			) {
 				dtArray[dtArray.length - 1].classList.add("no-bottom-border");
 				ddArray[dtArray.length - 1].classList.add("no-bottom-border");
-			} else {
+			} else if (
+				dtArray[dtArray.length - 1] &&
+				dtArray[dtArray.length - 2]
+			) {
 				dtArray[dtArray.length - 1].classList.add("no-bottom-border");
 				ddArray[dtArray.length - 1].classList.add("no-bottom-border");
 				dtArray[dtArray.length - 2].classList.add("no-bottom-border");
@@ -528,16 +529,16 @@ class Entity extends Component {
 				let infoValuesArray = [];
 
 				let infoTag = (
-					<dt key={key} href={value[0]}>
-						{key}
-					</dt>
+					<a href={value[0]}>
+						<dt key={key}>{key}</dt>
+					</a>
 				);
 
 				for (let i = 1; i < value.length; i++) {
 					let balise = (
-						<p href={value[i][0]} key={key + i}>
+						<a href={value[i][0]} key={key + i}>
 							{value[i][1]}
-						</p>
+						</a>
 					);
 					infoValuesArray.push(balise);
 				}
@@ -627,6 +628,7 @@ class Entity extends Component {
 					case -1:
 						OthersInfos.push(infoTag);
 						OthersInfos.push(infoValues);
+						break;
 				}
 			}
 
