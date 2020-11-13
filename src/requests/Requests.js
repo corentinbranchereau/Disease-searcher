@@ -56,7 +56,7 @@ export function fetchAllInfosGenes(idD) {
     FILTER (?gda != ?gda2)
   }
 
-  LIMIT 10
+  LIMIT 500
 `;
 
 	const fullUrl =

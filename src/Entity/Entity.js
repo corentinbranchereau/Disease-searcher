@@ -27,17 +27,26 @@ class Entity extends Component {
 			notFoundGenes: false, // if error from the request
 			language: "fr", // default language
 			homepageLink: "http://localhost:3000",
+
 			titlesTablesFrench: [
 				"Présentation générale",
 				"Autres informations",
 				"Gènes associés",
 				"Maladies similaires",
+				"Gène-Score",
+				"Description",
+				"Maladies",
+				"Gènes associés",
 			],
 			titlesTablesEnglish: [
 				"General presentation",
 				"Other informations",
 				"Associated gene",
 				"Similar Disease",
+				"Gene-Score",
+				"Description",
+				"Diseases",
+				"Shared genes",
 			],
 			keywordsEN: [
 				[
@@ -77,6 +86,15 @@ class Entity extends Component {
 				],
 			],
 
+			keywordsDelete: [
+				"timestamp",
+				"identifiers",
+				"sitelinks",
+				"statements",
+				"version",
+				"dateModified",
+			],
+
 			formats: [
 				[".jpg", ".jpeg", ".png", ".gif", ".svg"],
 				[".mp4", ".wav"],
@@ -85,6 +103,7 @@ class Entity extends Component {
 			indexSubject: -1,
 			enableSubelementList: true,
 			subelementsCreated: { fr: false, en: false },
+			maxGenesCommon: 0,
 		};
 
 		window.onscroll = this.handleScroll;
@@ -167,7 +186,6 @@ class Entity extends Component {
 			data[gvalue].push([scoreValue, desc]);
 		}
 
-		console.log(data);
 		let empty = false;
 		if (this.state.loadingGenes && data === undefined) {
 			empty = true;
@@ -181,7 +199,7 @@ class Entity extends Component {
 	};
 
 	parseDataDisgenetSimilarDiseases = (dataArray) => {
-		let data;
+		let data = {};
 
 		for (let i = 0; i < dataArray.length; i++) {
 			let disease2 = dataArray[i].diseaseName2.value;
@@ -196,17 +214,31 @@ class Entity extends Component {
 
 				let partsURL = urlDisease2.split("/");
 				urlDisease2 = partsURL[partsURL.length - 1];
-
 				urlDisease2 = "/entity/" + disease2 + "/" + urlDisease2;
 
 				//console.log(urlDisease2);
-
 				data[disease2] = [];
 				data[disease2].push(urlDisease2);
 			}
-
 			data[disease2].push([geneUri, geneName]);
 		}
+
+		let dataOrder = {};
+
+		let max = 0;
+
+		for (const [key, value] of Object.entries(data)) {
+			if (!dataOrder[data[key].length]) {
+				dataOrder[data[key].length] = {};
+			}
+
+			dataOrder[data[key].length][key] = value;
+			if (data[key].length > max) {
+				max = data[key].length;
+			}
+		}
+
+		data = dataOrder;
 
 		let empty = false;
 		if (this.state.loadingDisgenet && data === undefined) {
@@ -217,6 +249,7 @@ class Entity extends Component {
 			dataDisgenetDiseases: data,
 			loadingDisgenet: false,
 			emptyDisgenet: empty,
+			maxGenesCommon: max,
 		});
 	};
 
@@ -338,6 +371,10 @@ class Entity extends Component {
 			for (let j = 0; j < keywords[i].length; j++) {
 				if (tag.includes(keywords[i][j])) {
 					return i;
+				}
+
+				if (tag === this.state.keywordsDelete) {
+					return -2;
 				}
 			}
 		}
@@ -532,6 +569,12 @@ class Entity extends Component {
 
 		let DiseasesGenesInfos = [];
 
+		let titles;
+
+		this.state.language === "fr"
+			? (titles = this.state.titlesTablesFrench)
+			: (titles = this.state.titlesTablesEnglish);
+
 		if (
 			this.state.loadingDisgenet ||
 			this.state.loadingWikidata ||
@@ -548,6 +591,23 @@ class Entity extends Component {
 
 			let dataGenes = this.state.dataGenes;
 
+			let infoValuesArray = [];
+			let infoTag = (
+				<dt className="headerDisease" key={"header"}>
+					{titles[4]}
+				</dt>
+			);
+			let balise = <p className="headerDisease">{titles[5]}</p>;
+			infoValuesArray.push(balise);
+			let infoValues = React.createElement(
+				"dd",
+				{ key: "headerDef" },
+				infoValuesArray
+			);
+
+			AssociatedGene.push(infoTag);
+			AssociatedGene.push(infoValues);
+
 			for (const [key, value] of Object.entries(dataGenes)) {
 				let infoTag = (
 					<dt key={key}>
@@ -563,32 +623,64 @@ class Entity extends Component {
 
 			let dataDis = this.state.dataDisgenetDiseases;
 
-			for (const [key, value] of Object.entries(dataDis)) {
-				let infoValuesArray = [];
+			let NbDiseasesDisplayMax = 10;
 
-				let infoTag = (
-					<a href={value[0]}>
-						<dt key={key}>{key}</dt>
-					</a>
-				);
+			infoValuesArray = [];
+			infoTag = (
+				<dt className="headerDisease" key={"header"}>
+					{titles[6]}
+				</dt>
+			);
+			balise = <p className="headerDisease">{titles[7]}</p>;
+			infoValuesArray.push(balise);
+			infoValues = React.createElement(
+				"dd",
+				{ key: "headerDef" },
+				infoValuesArray
+			);
 
-				for (let i = 1; i < value.length; i++) {
-					let balise = (
-						<a href={value[i][0]} key={key + i}>
-							{value[i][1]}
-						</a>
-					);
-					infoValuesArray.push(balise);
+			DiseasesGenesInfos.push(infoTag);
+			DiseasesGenesInfos.push(infoValues);
+
+			for (let k = this.state.maxGenesCommon; k >= 0; k--) {
+				if (dataDis[k]) {
+					for (const [key, value] of Object.entries(dataDis[k])) {
+						if (NbDiseasesDisplayMax <= 0) {
+							break;
+						}
+						let infoValuesArray = [];
+
+						let infoTag = (
+							<dt key={key}>
+								<a href={value[0]}>{key}</a>
+							</dt>
+						);
+
+						for (let i = 1; i < value.length; i++) {
+							let balise = (
+								<p>
+									<a href={value[i][0]} key={key + i}>
+										{value[i][1]}
+									</a>
+								</p>
+							);
+							infoValuesArray.push(balise);
+						}
+
+						let infoValues = React.createElement(
+							"dd",
+							{ key: key + "Def" },
+							infoValuesArray
+						);
+
+						DiseasesGenesInfos.push(infoTag);
+						DiseasesGenesInfos.push(infoValues);
+						NbDiseasesDisplayMax--;
+					}
+					if (NbDiseasesDisplayMax <= 0) {
+						break;
+					}
 				}
-
-				let infoValues = React.createElement(
-					"dd",
-					{ key: key + "Def" },
-					infoValuesArray
-				);
-
-				DiseasesGenesInfos.push(infoTag);
-				DiseasesGenesInfos.push(infoValues);
 			}
 
 			for (const [key, value] of Object.entries(data)) {
@@ -667,6 +759,9 @@ class Entity extends Component {
 						OthersInfos.push(infoTag);
 						OthersInfos.push(infoValues);
 						break;
+					case -2:
+						break;
+
 					default:
 						console.log("Error in switch subject");
 						break;
@@ -690,12 +785,6 @@ class Entity extends Component {
 				{ className: "grid-container" },
 				PresentationInfos
 			);
-
-			let titles;
-
-			this.state.language === "fr"
-				? (titles = this.state.titlesTablesFrench)
-				: (titles = this.state.titlesTablesEnglish);
 
 			let reactElementAssociatedGene = [];
 			if (this.state.emptyGenes) {

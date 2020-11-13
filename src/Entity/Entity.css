@@ -9,6 +9,9 @@ video {
 	max-width: 400px;
 	height: auto;
 }
+a {
+	display: inline-block;
+}
 
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap");
 
@@ -88,6 +91,10 @@ dt {
 
 dd {
 	grid-column: span 3;
+}
+
+.headerDisease {
+	font-weight: bold;
 }
 
 .info-table {
