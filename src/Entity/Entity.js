@@ -441,7 +441,10 @@ class Entity extends Component {
 
 		let indexHighlight = 0;
 		let navbar = document.getElementsByTagName("nav")[0];
-		let offset = navbar.offsetHeight + 40;
+		let offset;
+		if (navbar) {
+			offset = navbar.offsetHeight + 40;
+		}
 		for (let i = scrollPositions.length - 1; i > 0; i--) {
 			if (scrollPositions[i] < offset) {
 				indexHighlight = i;

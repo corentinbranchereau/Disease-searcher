@@ -41,9 +41,40 @@ class Search extends React.Component {
 		}
 	};
 	handleKeyDown = (event) => {
-		if (event.key === "Enter" || event.key === "Unidentified") {
+		console.log(event);
+		if (event.key === "Enter") {
 			this.setState({ searching: true });
 			this.search.blur();
+		}
+		if (event.key === "Unidentified") {
+			this.setState({ searching: true });
+			this.search.blur();
+			let tab = this.state.searchResults;
+			setTimeout(() => {
+				const entity = tab.find((element) => {
+					if (
+						element.label.value.toLowerCase() ===
+						this.state.query.toLocaleLowerCase()
+					) {
+						return true;
+					}
+					return false;
+				});
+				let href = "/entity/";
+				if (entity) {
+					if (entity.label.value) {
+						href += entity.label.value + "/";
+						if (entity.dId.value) {
+							href += entity.dId.value + "/";
+							if (entity.mId.value) {
+								href += entity.mId.value;
+							}
+						}
+					}
+				}
+				let link = encodeURI(href);
+				this.props.history.push(link);
+			}, 200);
 		}
 	};
 
