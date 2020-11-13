@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { fetchAllInfos } from "../requests/Requests";
 import { fetchAssociatedGenesOnDisgenet } from "../requests/Requests";
 import { fetchAllInfosGenes } from "../requests/Requests";
-import logo from "../logo2.svg";
+import logo from "../logo-hexa.png";
 
 import "./Entity.css";
 import "./loading.css";

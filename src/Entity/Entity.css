@@ -42,15 +42,16 @@ nav {
 }
 
 #logo {
-	width: 220px;
+	width: 100px;
 	transition: all 0.5s ease;
+	margin-left: 2em;
 }
 
 #logo:hover {
 	cursor: pointer;
-	-webkit-animation: spin 6s linear infinite;
-	-moz-animation: spin 6s linear infinite;
-	animation: spin 6s linear infinite;
+	-webkit-animation: pulsate 3s linear infinite;
+	-moz-animation: pulsate 3s linear infinite;
+	animation: pulsate 3s linear infinite;
 }
 
 @-moz-keyframes spin {
@@ -67,6 +68,41 @@ nav {
 	100% {
 		-webkit-transform: rotate(360deg);
 		transform: rotate(360deg);
+	}
+}
+
+@-moz-keyframes pulsate {
+	from {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.85);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+@-webkit-keyframes pulsate {
+	from {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.85);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+
+@keyframes pulsate {
+	from {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.85);
+	}
+	to {
+		transform: scale(1);
 	}
 }
 
@@ -158,7 +194,7 @@ nav.minimized #nav-container {
 }
 
 nav.minimized #logo {
-	width: 110px;
+	width: 50px;
 }
 
 #menu p:hover {
