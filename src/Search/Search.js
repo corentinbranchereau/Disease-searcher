@@ -21,29 +21,14 @@ class Search extends React.Component {
 	fetchData = (valueToSearch) => {
 		this.setState({ loading: true });
 		fetchSearchResultsFromMesh(valueToSearch, this.handleResults);
-
-		/*fetchData = () => {
-		if (this.state.diseaseChecked && this.state.virusChecked) {
-			fetchSearchResultsDisease(valueToSearch, this.handleResults);
-			fetchSearchResultsVirus(valueToSearch, this.handleResults);
-		} else if (this.state.diseaseChecked) {
-			fetchSearchResultsDisease(valueToSearch, this.handleResults);
-		} else if (this.state.virusChecked) {
-			fetchSearchResultsVirus(valueToSearch, this.handleResults);
-		}*/
 	};
 
 	handleResults = (results, queryResponded) => {
 		if (queryResponded === this.state.query) {
 			this.setState({ loading: false });
+			// console.log(results);
 			//verifying that the response corresponds to the displayed search word
 			this.setState({ searchResults: results });
-			// results.map((result) => {
-			// 	let tmpSearchResults = this.state.searchResults;
-			// 	tmpSearchResults.push(result);
-			// 	this.setState({ searchResults: tmpSearchResults });
-			// 	return 1;
-			// });
 		}
 	};
 
@@ -85,6 +70,11 @@ class Search extends React.Component {
 		console.log(this.state.showOptions);
 	};
 
+	handleRedirect = (link, comment) => {
+		localStorage.setItem("entityDescription", comment);
+		this.props.history.push(link);
+	};
+
 	render() {
 		let resultsToPrint;
 		let resultsSuggestions;
@@ -105,6 +95,17 @@ class Search extends React.Component {
 				let name = result.label.value;
 				let comment = result.comment.value;
 				let subStringSize = 200;
+				let href = "/entity/";
+				if (name) {
+					href += name + "/";
+					if (result.dId.value) {
+						href += result.dId.value + "/";
+						if (result.mId.value) {
+							href += result.mId.value;
+						}
+					}
+				}
+				let link = encodeURI(href);
 				if (name && !this.state.loading) {
 					return (
 						<li className="disease" key={name}>
@@ -116,9 +117,13 @@ class Search extends React.Component {
 									  "..."
 									: comment}
 							</p>
-							<a href={"/disease/" + name}>
-								<button>En savoir plus</button>
-							</a>
+							<button
+								onClick={() =>
+									this.handleRedirect(link, comment)
+								}
+							>
+								En savoir plus
+							</button>
 						</li>
 					);
 				}

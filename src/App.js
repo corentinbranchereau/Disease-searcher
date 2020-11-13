@@ -18,7 +18,11 @@ class App extends Component {
 				<Switch>
 					{/* Front Pages */}
 					<Route path="/" component={Search} exact />
-					<Route path="/virus/:virusName?" component={Virus} exact />
+					<Route
+						path="/entity/:name/:idD?/:idM?"
+						component={Virus}
+						exact
+					/>
 					<Route
 						path="/disease/:diseaseName"
 						component={Disease}
