@@ -125,7 +125,7 @@ dd {
 	padding: 1em 2em 1em 2em;
 	color: white;
 	overflow-y: scroll;
-	width: 13vw;
+	flex-shrink: 0;
 }
 
 #menu ul {
@@ -140,6 +140,10 @@ dd {
 #menu p:hover {
 	color: rgb(0, 204, 255);
 	cursor: pointer;
+}
+
+.menu-element > p {
+	width: max-content;
 }
 
 #info-table-container {

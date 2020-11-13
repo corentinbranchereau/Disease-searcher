@@ -321,6 +321,7 @@ class Entity extends Component {
 			if (this.state.enableSubelementList) {
 				this.displaySubelementList();
 			}
+			this.adaptMenuWidth();
 		}
 	}
 
@@ -490,6 +491,37 @@ class Entity extends Component {
 			".highlight ~ .subelement-list"
 		);
 		subelementListToDisplay.style.display = "inline";
+	}
+
+	adaptMenuWidth() {
+		let menuTitles = Array.from(
+			document.querySelectorAll(".menu-element > p ")
+		);
+		let maxWidth = -1;
+		menuTitles.forEach((title) => {
+			if (title.offsetWidth > maxWidth) {
+				maxWidth = title.offsetWidth;
+			}
+		});
+
+		let menu = document.getElementById("menu");
+
+		let menuPaddingLeft = parseInt(
+			window
+				.getComputedStyle(menu, null)
+				.getPropertyValue("padding-left")
+				.split("px")[0]
+		);
+		let menuPaddingRight = parseInt(
+			window
+				.getComputedStyle(menu, null)
+				.getPropertyValue("padding-right")
+				.split("px")[0]
+		);
+
+		maxWidth += menuPaddingLeft + menuPaddingRight;
+
+		menu.style.width = maxWidth + "px";
 	}
 
 	render() {
