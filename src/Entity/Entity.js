@@ -367,14 +367,16 @@ class Entity extends Component {
 			keywords = this.state.keywordsEN;
 		}
 
+		for (let i = 0; i < this.state.keywordsDelete.length; i++) {
+			if (tag.includes(this.state.keywordsDelete[i])) {
+				return -2;
+			}
+		}
+
 		for (let i = 0; i < keywords.length; i++) {
 			for (let j = 0; j < keywords[i].length; j++) {
 				if (tag.includes(keywords[i][j])) {
 					return i;
-				}
-
-				if (tag === this.state.keywordsDelete) {
-					return -2;
 				}
 			}
 		}
@@ -398,6 +400,15 @@ class Entity extends Component {
 				}
 			}
 		}
+
+		if (url.startsWith("http")) {
+			return (
+				<a key={key + index} href={url}>
+					{url}
+				</a>
+			);
+		}
+
 		return <p key={key + index}>{url}</p>;
 	};
 
@@ -489,6 +500,21 @@ class Entity extends Component {
 		this.highlightVisibleElement();
 		if (this.state.enableSubelementList) {
 			this.displaySubelementList();
+		}
+
+		let navbar = document.getElementsByTagName("nav");
+
+		if (navbar) {
+			if (window.scrollY >= 60) {
+				navbar[0].classList.add("minimized");
+				let menu = document.getElementById("menu");
+				console.log(menu);
+				menu.style.top = "76px";
+			} else {
+				navbar[0].classList.remove("minimized");
+				let menu = document.getElementById("menu");
+				menu.style.top = "171px";
+			}
 		}
 	};
 
@@ -894,26 +920,32 @@ class Entity extends Component {
 									</p>
 									<ul className="subelement-list"></ul>
 								</li>
-								<li className="menu-element">
-									<p
-										onClick={() => {
-											this.handleMenuClick(3, -1);
-										}}
-									>
-										{titles[2]}
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
-								<li className="menu-element">
-									<p
-										onClick={() => {
-											this.handleMenuClick(4, -1);
-										}}
-									>
-										{titles[3]}
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
+
+								{!this.state.emptyGenes ? (
+									<li className="menu-element">
+										<p
+											onClick={() => {
+												this.handleMenuClick(3, -1);
+											}}
+										>
+											{titles[2]}
+										</p>
+										<ul className="subelement-list"></ul>
+									</li>
+								) : null}
+
+								{!this.state.emptyDisgenet ? (
+									<li className="menu-element">
+										<p
+											onClick={() => {
+												this.handleMenuClick(4, -1);
+											}}
+										>
+											{titles[3]}
+										</p>
+										<ul className="subelement-list"></ul>
+									</li>
+								) : null}
 							</ul>
 						</div>
 
@@ -924,14 +956,6 @@ class Entity extends Component {
 								</div>
 								<div className="info-table-body">
 									{infoListPresentation}
-								</div>
-							</div>
-							<div className="info-table">
-								<div className="info-table-header">
-									<h1>IDENTIFICATION</h1>
-								</div>
-								<div className="info-table-body">
-									{infoListIdentification}
 								</div>
 							</div>
 
@@ -947,6 +971,15 @@ class Entity extends Component {
 							{reactElementAssociatedGene}
 
 							{reactElementSimilarDisease}
+
+							<div className="info-table">
+								<div className="info-table-header">
+									<h1>IDENTIFICATION</h1>
+								</div>
+								<div className="info-table-body">
+									{infoListIdentification}
+								</div>
+							</div>
 						</div>
 					</div>
 				</React.Fragment>

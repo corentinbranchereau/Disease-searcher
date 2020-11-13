@@ -33,6 +33,7 @@ nav {
 	align-items: center;
 	justify-content: left;
 	padding: 0em 2.5em 0em 2.5em;
+	transition: all 0.5s ease;
 }
 
 #nav-text:hover {
@@ -42,6 +43,7 @@ nav {
 
 #logo {
 	width: 220px;
+	transition: all 0.5s ease;
 }
 
 #logo:hover {
@@ -133,6 +135,7 @@ dd {
 	color: white;
 	overflow-y: scroll;
 	flex-shrink: 0;
+	transition: all 0.5s ease;
 }
 
 #menu ul {
@@ -142,6 +145,15 @@ dd {
 #menu li {
 	margin: 1em 0em 1em 0em;
 	list-style-type: none;
+}
+
+nav.minimized #nav-container {
+	height: 75px;
+	font-size: 0.5em;
+}
+
+nav.minimized #logo {
+	width: 110px;
 }
 
 #menu p:hover {
