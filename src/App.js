@@ -8,8 +8,7 @@ import {
 
 import "./App.css";
 import Search from "./Search/Search";
-import Disease from "./Disease/Disease";
-import Virus from "./Virus/Virus";
+import Entity from "./Entity/Entity";
 
 class App extends Component {
 	render() {
@@ -20,12 +19,7 @@ class App extends Component {
 					<Route path="/" component={Search} exact />
 					<Route
 						path="/entity/:name/:idD?/:idM?"
-						component={Virus}
-						exact
-					/>
-					<Route
-						path="/disease/:diseaseName"
-						component={Disease}
+						component={Entity}
 						exact
 					/>
 
