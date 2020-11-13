@@ -567,16 +567,16 @@ class Entity extends Component {
 				let infoValuesArray = [];
 
 				let infoTag = (
-					<a href={value[0]}>
-						<dt key={key}>{key}</dt>
-					</a>
+					<dt key={key}>
+						<a href={value[0]}>{key}</a>
+					</dt>
 				);
 
 				for (let i = 1; i < value.length; i++) {
 					let balise = (
-						<a href={value[i][0]} key={key + i}>
-							{value[i][1]}
-						</a>
+						<dd key={key + i}>
+							<a href={value[i][0]}>{value[i][1]}</a>
+						</dd>
 					);
 					infoValuesArray.push(balise);
 				}
@@ -805,26 +805,32 @@ class Entity extends Component {
 									</p>
 									<ul className="subelement-list"></ul>
 								</li>
-								<li className="menu-element">
-									<p
-										onClick={() => {
-											this.handleMenuClick(3, -1);
-										}}
-									>
-										{titles[2]}
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
-								<li className="menu-element">
-									<p
-										onClick={() => {
-											this.handleMenuClick(4, -1);
-										}}
-									>
-										{titles[3]}
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
+
+								{!this.state.emptyGenes ? (
+									<li className="menu-element">
+										<p
+											onClick={() => {
+												this.handleMenuClick(3, -1);
+											}}
+										>
+											{titles[2]}
+										</p>
+										<ul className="subelement-list"></ul>
+									</li>
+								) : null}
+
+								{!this.state.emptyDisgenet ? (
+									<li className="menu-element">
+										<p
+											onClick={() => {
+												this.handleMenuClick(4, -1);
+											}}
+										>
+											{titles[3]}
+										</p>
+										<ul className="subelement-list"></ul>
+									</li>
+								) : null}
 							</ul>
 						</div>
 
