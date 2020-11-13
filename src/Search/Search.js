@@ -89,6 +89,7 @@ class Search extends React.Component {
 					if (indexA < indexB) return -1;
 					if (indexA > indexB) return 1;
 					if (indexA === indexB) return 0;
+					return 0;
 				}
 			);
 			resultsToPrint = searchResultsFiltered.map((result) => {
@@ -137,9 +138,9 @@ class Search extends React.Component {
 							let nameEN = result.label.value.toLowerCase();
 							let recherche = this.state.query.toLowerCase();
 							let index = nameEN.indexOf(recherche);
-							let wordList;
+							//let wordList;
 							if (index !== -1) {
-								wordList = nameEN.split(this.state.query, 2);
+								//wordList = nameEN.split(this.state.query, 2);
 								return (
 									<option
 										// className="suggestion-single-result"
@@ -163,6 +164,7 @@ class Search extends React.Component {
 								);
 							}
 						}
+						return <React.Fragment />;
 					});
 			}
 		} else {
