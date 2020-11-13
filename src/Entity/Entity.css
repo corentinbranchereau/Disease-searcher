@@ -95,6 +95,11 @@ dd {
 	grid-column: span 3;
 }
 
+dd p {
+	padding: 0;
+	margin: 0em 0em 1em 0em;
+}
+
 .headerDisease {
 	font-weight: bold;
 }
