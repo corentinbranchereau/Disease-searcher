@@ -326,7 +326,7 @@ class Entity extends Component {
 	identifySubject = (tag) => {
 		let keywords;
 
-		if (this.state.language == "fr") {
+		if (this.state.language === "fr") {
 			keywords = this.state.keywordsFR;
 		} else {
 			keywords = this.state.keywordsEN;
@@ -348,9 +348,13 @@ class Entity extends Component {
 				if (url.includes(this.state.formats[i][j])) {
 					switch (i) {
 						case 0:
-							return <img src={url} key={key + index}></img>;
+							return (
+								<img src={url} key={key + index} alt=""></img>
+							);
 						case 1:
 							return <video src={url} key={key + index}></video>;
+						default:
+							break;
 					}
 				}
 			}
@@ -421,7 +425,7 @@ class Entity extends Component {
 			document.getElementsByClassName("info-table")
 		);
 
-		let scrollPositions = new Array();
+		let scrollPositions = [];
 
 		infoTables.forEach((table) => {
 			scrollPositions.push(table.getBoundingClientRect().top);
@@ -576,7 +580,7 @@ class Entity extends Component {
 							value.propLabel.value
 						);
 
-						if (subjectFound != -1) {
+						if (subjectFound !== -1) {
 							subject = subjectFound;
 						}
 
@@ -611,7 +615,7 @@ class Entity extends Component {
 
 				let subjectFound = this.identifySubject(key);
 
-				if (subjectFound != -1) {
+				if (subjectFound !== -1) {
 					subject = subjectFound;
 				}
 
@@ -629,6 +633,10 @@ class Entity extends Component {
 					case -1:
 						OthersInfos.push(infoTag);
 						OthersInfos.push(infoValues);
+						break;
+					default:
+						console.log("Error in switch subject");
+						break;
 				}
 			}
 
@@ -734,7 +742,7 @@ class Entity extends Component {
 					<div id="content-container">
 						<div id="menu">
 							<ul>
-								<li class="menu-element">
+								<li className="menu-element">
 									<p
 										onClick={() => {
 											this.handleMenuClick(0, -1);
@@ -742,9 +750,9 @@ class Entity extends Component {
 									>
 										{titles[0]}
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
-								<li class="menu-element">
+								<li className="menu-element">
 									<p
 										onClick={() => {
 											this.handleMenuClick(1, -1);
@@ -752,9 +760,9 @@ class Entity extends Component {
 									>
 										Identification
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
-								<li class="menu-element">
+								<li className="menu-element">
 									<p
 										onClick={() => {
 											this.handleMenuClick(2, -1);
@@ -762,7 +770,7 @@ class Entity extends Component {
 									>
 										{titles[1]}
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
 								<li className="menu-element">
 									<p
@@ -772,7 +780,7 @@ class Entity extends Component {
 									>
 										{titles[2]}
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
 								<li className="menu-element">
 									<p
@@ -782,7 +790,7 @@ class Entity extends Component {
 									>
 										{titles[3]}
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
 							</ul>
 						</div>

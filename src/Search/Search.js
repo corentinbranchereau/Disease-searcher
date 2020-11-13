@@ -40,7 +40,7 @@ class Search extends React.Component {
 				return (
 					<div className="results">
 						<h1>{result.name.value}</h1>
-						<img src={result.image.value} />
+						<img src={result.image.value} alt="" />
 						<p>{result.comment.value}</p>
 					</div>
 				);
