@@ -12,7 +12,6 @@ class Entity extends Component {
 		super(props);
 
 		this.state = {
-			loading: true, // true if we fetch the results
 			loadingGenes: true, // true if we fetch the results
 			loadingWikidata: true,
 			loadingDisgenet: true, // true if we fetch the results
@@ -29,9 +28,10 @@ class Entity extends Component {
 			titlesTablesFrench: [
 				"PRESENTATION GENERALE",
 				"AUTRES INFORMATIONS",
-				"GENES ASSSOCIES"
+				"GENES ASSSOCIES",
+				"MALADIES SIMILAIRES"
 			],
-			titlesTablesEnglish: ["GENERAL PRESENTATION", "OTHER INFORMATION", "ASSOCIATED GENE"],
+			titlesTablesEnglish: ["GENERAL PRESENTATION", "OTHER INFORMATION", "ASSOCIATED GENE", "SIMILAR DISEASE"],
 			keywordsEN: [
 				[
 					"ID",
@@ -224,7 +224,6 @@ class Entity extends Component {
 			this.state.entityName,
 			l
 		).then((r) => this.parseDataAllInfos(r, l));
-		).then((r) => this.parseData(r, l));
 
 		fetchAllInfosGenes(
 			this.state.entityIdD,
@@ -564,9 +563,11 @@ class Entity extends Component {
 						</div>
 					</div>
 
+					{reactElementAssociatedGene}
+
 					<div className="info-table">
 						<div className="info-table-header">
-							<h1>SIMILAR DISEASES</h1>
+							<h1>{titles[3]}</h1>
 						</div>
 						<div className="info-table-body">
 							{infoListGenesDiseases}
@@ -580,7 +581,6 @@ class Entity extends Component {
 						<div className="info-table-body">{infoListOthers}</div>
 					</div>
 
-					{reactElementAssociatedGene}
 
 				</React.Fragment>
 			);
