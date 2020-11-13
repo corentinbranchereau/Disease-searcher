@@ -412,7 +412,17 @@ class Entity extends Component {
 		return <p key={key + index}>{url}</p>;
 	};
 
-	handleMenuClick = (menuIndex, subelementIndex) => {
+	handleMenuClick = (event, subelementIndex) => {
+		// find the index of the corresponding title in menu
+		let menuElementClicked = event.target.closest(".menu-element");
+		let allMenuElements = document.getElementsByClassName("menu-element");
+		let elementIndex = -1;
+		for (let i = 0; i < allMenuElements.length; i++) {
+			if (allMenuElements[i] === menuElementClicked) {
+				elementIndex = i;
+				break;
+			}
+		}
 		let infoTables = document.getElementsByClassName("info-table");
 		let navbar = document.getElementsByTagName("nav")[0];
 		let offset = navbar.offsetHeight + 20;
@@ -421,7 +431,7 @@ class Entity extends Component {
 			// click on a "title"
 			window.scrollTo({
 				top:
-					infoTables[menuIndex].getBoundingClientRect().top +
+					infoTables[elementIndex].getBoundingClientRect().top +
 					window.scrollY -
 					offset,
 			});
@@ -451,7 +461,7 @@ class Entity extends Component {
 
 			// get the dl element in the info-table
 			let infoTableDlElement =
-				infoTables[menuIndex].childNodes[1].childNodes[0];
+				infoTables[elementIndex].childNodes[1].childNodes[0];
 
 			// scroll to the child at index "subelementIndex"
 			window.scrollTo({
@@ -529,7 +539,8 @@ class Entity extends Component {
 				if (dlChildNodes[j].tagName === "DT") {
 					let subelement = document.createElement("LI");
 					subelement.innerHTML = dlChildNodes[j].textContent;
-					subelement.onclick = () => this.handleMenuClick(i, j);
+					subelement.onclick = (event) =>
+						this.handleMenuClick(event, j);
 					subelementLists[i].appendChild(subelement);
 				}
 			}
@@ -887,8 +898,8 @@ class Entity extends Component {
 							<ul>
 								<li className="menu-element">
 									<p
-										onClick={() => {
-											this.handleMenuClick(0, -1);
+										onClick={(event) => {
+											this.handleMenuClick(event, -1);
 										}}
 									>
 										{titles[0]}
@@ -897,18 +908,8 @@ class Entity extends Component {
 								</li>
 								<li className="menu-element">
 									<p
-										onClick={() => {
-											this.handleMenuClick(1, -1);
-										}}
-									>
-										Identification
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
-								<li className="menu-element">
-									<p
-										onClick={() => {
-											this.handleMenuClick(2, -1);
+										onClick={(event) => {
+											this.handleMenuClick(event, -1);
 										}}
 									>
 										{titles[1]}
@@ -919,8 +920,8 @@ class Entity extends Component {
 								{!this.state.emptyGenes ? (
 									<li className="menu-element">
 										<p
-											onClick={() => {
-												this.handleMenuClick(3, -1);
+											onClick={(event) => {
+												this.handleMenuClick(event, -1);
 											}}
 										>
 											{titles[2]}
@@ -932,8 +933,8 @@ class Entity extends Component {
 								{!this.state.emptyDisgenet ? (
 									<li className="menu-element">
 										<p
-											onClick={() => {
-												this.handleMenuClick(4, -1);
+											onClick={(event) => {
+												this.handleMenuClick(event, -1);
 											}}
 										>
 											{titles[3]}
@@ -941,6 +942,17 @@ class Entity extends Component {
 										<ul className="subelement-list"></ul>
 									</li>
 								) : null}
+
+								<li className="menu-element">
+									<p
+										onClick={(event) => {
+											this.handleMenuClick(event, -1);
+										}}
+									>
+										Identification
+									</p>
+									<ul className="subelement-list"></ul>
+								</li>
 							</ul>
 						</div>
 
