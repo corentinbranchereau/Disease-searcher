@@ -148,7 +148,7 @@ class Entity extends Component {
 	};
 
 	parseDataGenes = (dataArray) => {
-		let data = {};
+		let data;
 		for (let i = 0; i < dataArray.length; i++) {
 			let g = dataArray[i].gene;
 			let gvalue = g.value;
@@ -162,14 +162,16 @@ class Entity extends Component {
 
 			let desc = dataArray[i].description.value;
 			if (desc) desc = desc.substring(1);
-
+			if (!data) data = {};
 			data[gvalue] = [];
 			data[gvalue].push([scoreValue, desc]);
 		}
+
 		console.log(data);
 		let empty = false;
-		if (this.state.loadingGenes && data.length === 0) {
+		if (this.state.loadingGenes && data === undefined) {
 			empty = true;
+			data = {};
 		}
 		this.setState({
 			dataGenes: data,
@@ -179,13 +181,15 @@ class Entity extends Component {
 	};
 
 	parseDataDisgenetSimilarDiseases = (dataArray) => {
-		let data = {};
+		let data;
 
 		for (let i = 0; i < dataArray.length; i++) {
 			let disease2 = dataArray[i].diseaseName2.value;
 
 			let geneName = dataArray[i].geneName.value;
 			let geneUri = dataArray[i].gene.value;
+
+			if (!data) data = {};
 
 			if (!data[disease2]) {
 				let urlDisease2 = dataArray[i].meshURL.value;
@@ -204,15 +208,13 @@ class Entity extends Component {
 			data[disease2].push([geneUri, geneName]);
 		}
 
-		let newDataDisgenet = { ...this.state.dataDisgenetDiseases };
-		newDataDisgenet = data;
-		console.log(data);
 		let empty = false;
-		if (this.state.loadingDisgenet && data.length === 0) {
+		if (this.state.loadingDisgenet && data === undefined) {
 			empty = true;
+			data = {};
 		}
 		this.setState({
-			dataDisgenetDiseases: newDataDisgenet,
+			dataDisgenetDiseases: data,
 			loadingDisgenet: false,
 			emptyDisgenet: empty,
 		});
@@ -325,7 +327,7 @@ class Entity extends Component {
 	identifySubject = (tag) => {
 		let keywords;
 
-		if (this.state.language == "fr") {
+		if (this.state.language === "fr") {
 			keywords = this.state.keywordsFR;
 		} else {
 			keywords = this.state.keywordsEN;
@@ -347,9 +349,13 @@ class Entity extends Component {
 				if (url.includes(this.state.formats[i][j])) {
 					switch (i) {
 						case 0:
-							return <img src={url} key={key + index}></img>;
+							return (
+								<img src={url} key={key + index} alt=""></img>
+							);
 						case 1:
 							return <video src={url} key={key + index}></video>;
+						default:
+							break;
 					}
 				}
 			}
@@ -420,7 +426,7 @@ class Entity extends Component {
 			document.getElementsByClassName("info-table")
 		);
 
-		let scrollPositions = new Array();
+		let scrollPositions = [];
 
 		infoTables.forEach((table) => {
 			scrollPositions.push(table.getBoundingClientRect().top);
@@ -575,7 +581,7 @@ class Entity extends Component {
 							value.propLabel.value
 						);
 
-						if (subjectFound != -1) {
+						if (subjectFound !== -1) {
 							subject = subjectFound;
 						}
 
@@ -610,7 +616,7 @@ class Entity extends Component {
 
 				let subjectFound = this.identifySubject(key);
 
-				if (subjectFound != -1) {
+				if (subjectFound !== -1) {
 					subject = subjectFound;
 				}
 
@@ -628,6 +634,9 @@ class Entity extends Component {
 					case -1:
 						OthersInfos.push(infoTag);
 						OthersInfos.push(infoValues);
+						break;
+					default:
+						console.log("Error in switch subject");
 						break;
 				}
 			}
@@ -658,8 +667,10 @@ class Entity extends Component {
 
 			let reactElementAssociatedGene = [];
 			if (this.state.emptyGenes) {
+				console.log("NULL ASSOCIATED GENES");
 				reactElementAssociatedGene = null;
 			} else {
+				console.log("NON NULL ASSOCIATED GENES");
 				let infoAssociatedGene = React.createElement(
 					"dl",
 					{ className: "grid-container" },
@@ -679,8 +690,10 @@ class Entity extends Component {
 
 			let reactElementSimilarDisease = [];
 			if (this.state.emptyDisgenet) {
+				console.log("NULL ASSOCIATED DISEASE");
 				reactElementSimilarDisease = null;
 			} else {
+				console.log("NON NULL ASSOCIATED DISEASE");
 				let infoListGenesDiseases = React.createElement(
 					"dl",
 					{ className: "grid-container" },
@@ -730,7 +743,7 @@ class Entity extends Component {
 					<div id="content-container">
 						<div id="menu">
 							<ul>
-								<li class="menu-element">
+								<li className="menu-element">
 									<p
 										onClick={() => {
 											this.handleMenuClick(0, -1);
@@ -738,9 +751,9 @@ class Entity extends Component {
 									>
 										{titles[0]}
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
-								<li class="menu-element">
+								<li className="menu-element">
 									<p
 										onClick={() => {
 											this.handleMenuClick(1, -1);
@@ -748,9 +761,9 @@ class Entity extends Component {
 									>
 										Identification
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
-								<li class="menu-element">
+								<li className="menu-element">
 									<p
 										onClick={() => {
 											this.handleMenuClick(2, -1);
@@ -758,7 +771,7 @@ class Entity extends Component {
 									>
 										{titles[1]}
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
 								<li className="menu-element">
 									<p
@@ -768,7 +781,7 @@ class Entity extends Component {
 									>
 										{titles[2]}
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
 								<li className="menu-element">
 									<p
@@ -778,7 +791,7 @@ class Entity extends Component {
 									>
 										{titles[3]}
 									</p>
-									<ul class="subelement-list"></ul>
+									<ul className="subelement-list"></ul>
 								</li>
 							</ul>
 						</div>
