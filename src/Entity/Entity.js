@@ -508,7 +508,6 @@ class Entity extends Component {
 			if (window.scrollY >= 60) {
 				navbar[0].classList.add("minimized");
 				let menu = document.getElementById("menu");
-				console.log(menu);
 				menu.style.top = "76px";
 			} else {
 				navbar[0].classList.remove("minimized");
@@ -814,10 +813,8 @@ class Entity extends Component {
 
 			let reactElementAssociatedGene = [];
 			if (this.state.emptyGenes) {
-				console.log("NULL ASSOCIATED GENES");
 				reactElementAssociatedGene = null;
 			} else {
-				console.log("NON NULL ASSOCIATED GENES");
 				let infoAssociatedGene = React.createElement(
 					"dl",
 					{ className: "grid-container" },
@@ -837,10 +834,8 @@ class Entity extends Component {
 
 			let reactElementSimilarDisease = [];
 			if (this.state.emptyDisgenet) {
-				console.log("NULL ASSOCIATED DISEASE");
 				reactElementSimilarDisease = null;
 			} else {
-				console.log("NON NULL ASSOCIATED DISEASE");
 				let infoListGenesDiseases = React.createElement(
 					"dl",
 					{ className: "grid-container" },
