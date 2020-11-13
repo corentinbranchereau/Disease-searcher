@@ -1,4 +1,6 @@
 //import { SparqlEndpointFetcher } from "fetch-sparql-endpoint";
+const endpointUrl_wikidata = "https://query.wikidata.org/sparql";
+const endpointUrl_disgenet = "http://rdf.disgenet.org/sparql/";
 
 export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
 	try {
@@ -84,40 +86,39 @@ export async function fetchSearchResultsDisease(userEntry, onResultsFound) {
 					console.log("Error : ", error);
 				}
 			);
-import { SparqlEndpointFetcher } from "fetch-sparql-endpoint";
-
-const endpointUrl_wikidata = "https://query.wikidata.org/sparql";
-const endpointUrl_disgenet = "http://rdf.disgenet.org/sparql/"
-
-
-export async function fetchByVirusName(virusName, onResultsFound) {
-	try {
-		const myFetcher = new SparqlEndpointFetcher();
-		const bindingsStream = await myFetcher.fetchBindings(
-			"https://dbpedia.org/sparql",
-			`
-        SELECT ?virus ?name ?virusFamily ?comment ?image
-        WHERE {
-        ?virusFamily dct:subject dbc:Virus_families.
-        ?virus dbo:family ?virusFamily;
-        rdfs:label ?name;
-        rdfs:comment ?comment;
-        foaf:depiction ?image.
-        FILTER regex(lcase(?name), "` +
-				virusName +
-				`").
-        FILTER langMatches(lang(?name), "en").
-        FILTER langMatches(lang(?comment), "fr").
-        } ORDER BY ASC (?virus)
-        `
-		);
-		bindingsStream.on("data", (bindings) => {
-			onResultsFound(bindings);
-		});
 	} catch (err) {
 		console.log("somethin went wrong", err);
 	}
 }
+
+// export async function fetchByVirusName(virusName, onResultsFound) {
+// 	try {
+// 		const myFetcher = new SparqlEndpointFetcher();
+// 		const bindingsStream = await myFetcher.fetchBindings(
+// 			"https://dbpedia.org/sparql",
+// 			`
+//         SELECT ?virus ?name ?virusFamily ?comment ?image
+//         WHERE {
+//         ?virusFamily dct:subject dbc:Virus_families.
+//         ?virus dbo:family ?virusFamily;
+//         rdfs:label ?name;
+//         rdfs:comment ?comment;
+//         foaf:depiction ?image.
+//         FILTER regex(lcase(?name), "` +
+// 				virusName +
+// 				`").
+//         FILTER langMatches(lang(?name), "en").
+//         FILTER langMatches(lang(?comment), "fr").
+//         } ORDER BY ASC (?virus)
+//         `
+// 		);
+// 		bindingsStream.on("data", (bindings) => {
+// 			onResultsFound(bindings);
+// 		});
+// 	} catch (err) {
+// 		console.log("somethin went wrong", err);
+// 	}
+// }
 
 export function fetchAllInfosGenes(idD, idM, name, lang) {
 	//TODO Vérifier les caratères spéciaux dans id et name
@@ -155,8 +156,6 @@ export function fetchAllInfosGenes(idD, idM, name, lang) {
 		.then((body) => body.json())
 		.then((r) => r.results.bindings);
 }
-
-
 
 export function fetchAllInfos(idD, idM, name, lang) {
 	//TODO Vérifier les caratères spéciaux dans id et name
@@ -232,12 +231,14 @@ export function fetchAllInfos(idD, idM, name, lang) {
 }
 
 export function fetchAssociatedGenesOnDisgenet(idD) {
-		// eslint-disable-next-line no-useless-concat
-	let meshId = "<"+"http://id.nlm.nih.gov/mesh/"+idD+">";
+	// eslint-disable-next-line no-useless-concat
+	let meshId = "<" + "http://id.nlm.nih.gov/mesh/" + idD + ">";
 	const sparqlQuery =
-			`SELECT DISTINCT ?gene ?scoreValue (SAMPLE(?desc) AS ?description)
+		`SELECT DISTINCT ?gene ?scoreValue (SAMPLE(?desc) AS ?description)
 			WHERE { 
-				?disease skos:exactMatch `+meshId+`. 
+				?disease skos:exactMatch ` +
+		meshId +
+		`. 
 				?gda sio:SIO_000628 ?disease, ?gene;
 				sio:SIO_000216 ?score;
 				dcterms:description ?desc.
@@ -245,20 +246,13 @@ export function fetchAssociatedGenesOnDisgenet(idD) {
 				FILTER(?gene != ?disease).		
 				FILTER(langmatches(lang(?desc),"en")).				
             } GROUP BY ?gene ?scoreValue ORDER BY DESC(?scoreValue) LIMIT 10`;
-        try{
-            fetch(requestUrl + query + suffixUrl)
-			.then((res) => res.json())
-			.then(
-				(result) => {
-					onResultsFound(result.results.bindings, userEntry);
-				},
-				(error) => {
-					console.log("Error : ", error);
-				}
-			);
-	} catch (err) {
-		console.log("somethin went wrong", err);
-	}
+	const fullUrl =
+		endpointUrl_disgenet + "?query=" + encodeURIComponent(sparqlQuery);
+	const headers = { Accept: "application/sparql-results+json" };
+
+	return fetch(fullUrl, { headers })
+		.then((body) => body.json())
+		.then((r) => r.results.bindings);
 }
 
 export async function fetchSearchResultsVirus(userEntry, onResultsFound) {
@@ -352,11 +346,11 @@ export async function fetchSearchResultsVirus(userEntry, onResultsFound) {
 //   }
 // }
 
-/*		const fullUrl =
-			endpointUrl_disgenet + "?query=" + encodeURIComponent(sparqlQuery);
-		const headers = {Accept: "application/sparql-results+json"};
+//		const fullUrl =
+//			endpointUrl_disgenet + "?query=" + encodeURIComponent(sparqlQuery);
+//		const headers = {Accept: "application/sparql-results+json"};
 
-		return fetch(fullUrl, {headers})
-			.then((body) => body.json())
-			.then((r) => r.results.bindings);
-	}*/
+//		return fetch(fullUrl, {headers})
+//			.then((body) => body.json())
+//			.then((r) => r.results.bindings);
+//
