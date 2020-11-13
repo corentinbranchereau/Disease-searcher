@@ -15,6 +15,8 @@ class Entity extends Component {
 			loadingGenes: true, // true if we fetch the results
 			loadingWikidata: true,
 			loadingDisgenet: true, // true if we fetch the results
+			emptyDisgenet : true,
+			emptyGenes : true,
 			entityIdD: this.props.match.params.idD, // url param : mesh id D
 			entityIdM: this.props.match.params.idM, // url param : mesh id M
 			entityName: this.props.match.params.name, // url param : name/label
@@ -165,7 +167,11 @@ class Entity extends Component {
 			data[gvalue].push([scoreValue, desc]);
 		}
 		console.log(data);
-		this.setState({ dataGenes: data, loadingGenes: false });
+		let empty = false;
+		if(this.state.loadingGenes && data.length===0){
+			empty = true;
+		}
+		this.setState({ dataGenes: data, loadingGenes: false, emptyGenes : empty});
 	};
 
 	parseDataDisgenetSimilarDiseases = (dataArray) => {
@@ -201,10 +207,14 @@ class Entity extends Component {
 		let newDataDisgenet = { ...this.state.dataDisgenetDiseases };
 		newDataDisgenet = data;
 		console.log(data);
-
+		let empty = false;
+		if(this.state.loadingDisgenet && data.length===0){
+			empty = true;
+		}
 		this.setState({
 			dataDisgenetDiseases: newDataDisgenet,
 			loadingDisgenet: false,
+			emptyDisgenet: empty
 		});
 	};
 
@@ -638,12 +648,6 @@ class Entity extends Component {
 				PresentationInfos
 			);
 
-			let infoListGenesDiseases = React.createElement(
-				"dl",
-				{ className: "grid-container" },
-				DiseasesGenesInfos
-			);
-
 			let titles;
 
 			this.state.language === "fr"
@@ -651,7 +655,7 @@ class Entity extends Component {
 				: (titles = this.state.titlesTablesEnglish);
 
 			let reactElementAssociatedGene = [];
-			if (this.state.loadingGenes) {
+			if (this.state.emptyGenes) {
 				reactElementAssociatedGene = null;
 			} else {
 				let infoAssociatedGene = React.createElement(
@@ -662,10 +666,31 @@ class Entity extends Component {
 				reactElementAssociatedGene = (
 					<div className="info-table">
 						<div className="info-table-header">
-							<h1>{titles[2]}</h1>
+							<h1>{titles[2].toUpperCase()}</h1>
 						</div>
 						<div className="info-table-body">
 							{infoAssociatedGene}
+						</div>
+					</div>
+				);
+			}
+
+			let reactElementSimilarDisease = [];
+			if (this.state.emptyDisgenet) {
+				reactElementSimilarDisease = null;
+			} else {
+				let infoListGenesDiseases = React.createElement(
+					"dl",
+					{ className: "grid-container" },
+					DiseasesGenesInfos
+				);
+				reactElementSimilarDisease = (
+					<div className="info-table">
+						<div className="info-table-header">
+							<h1>{titles[3].toUpperCase()}</h1>
+						</div>
+						<div className="info-table-body">
+							{infoListGenesDiseases}
 						</div>
 					</div>
 				);
@@ -785,14 +810,7 @@ class Entity extends Component {
 
 							{reactElementAssociatedGene}
 
-							<div className="info-table">
-								<div className="info-table-header">
-									<h1>{titles[3].toUpperCase()}</h1>
-								</div>
-								<div className="info-table-body">
-									{infoListGenesDiseases}
-								</div>
-							</div>
+							{reactElementSimilarDisease}
 						</div>
 					</div>
 				</React.Fragment>
