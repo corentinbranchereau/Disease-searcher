@@ -324,14 +324,13 @@ class Search extends React.Component {
 						</div> */}
 					</div>
 				</div>
-				<datalist
-					id="suggestion-results"
-					onClick={this.handleDataListClick}
-				>
+				<datalist id="suggestion-results" onClick={this.handleKeyDown}>
 					{resultsSuggestions}
 				</datalist>
 
-				<div className="results-container">
+				<div
+					className={this.state.searching ? "results-container" : ""}
+				>
 					{this.state.searching &&
 					!this.state.loading &&
 					this.state.searchResults.length === 0 ? (

@@ -73,19 +73,6 @@
 	top: 10vh;
 	width: 15vw;
 	transition: 1s all ease;
-	animation: App-logo-pulsate infinite 3s linear;
-}
-
-@keyframes App-logo-pulsate {
-	from {
-		transform: scale(0.85);
-	}
-	50% {
-		transform: scale(1);
-	}
-	to {
-		transform: scale(0.85);
-	}
 }
 
 .search-header.topbar .search-logo {
@@ -286,13 +273,11 @@ input:checked + .slider:before {
 /* Results container */
 
 .results-container {
-	margin-top: 18vh;
-	overflow-y: scroll;
-	height: 82vh;
+	margin-top: 22vh;
 }
 
 .results-container .tilesWrap {
-	padding-top: 30px;
+	padding: 0;
 	margin: 0;
 	list-style: none;
 	text-align: center;

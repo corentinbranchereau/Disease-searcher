@@ -518,8 +518,10 @@ class Entity extends Component {
 		}
 
 		let menuList = document.querySelectorAll("#menu .menu-element > p");
-		menuList[indexHighlight].classList.add("highlight");
-		return menuList[indexHighlight] === highlightedElement;
+		if (menuList && menuList[indexHighlight]) {
+			menuList[indexHighlight].classList.add("highlight");
+			return menuList[indexHighlight] === highlightedElement;
+		}
 	}
 
 	handleScroll = () => {
@@ -530,7 +532,7 @@ class Entity extends Component {
 
 		let navbar = document.getElementsByTagName("nav");
 
-		if (navbar) {
+		if (navbar && navbar[0]) {
 			if (window.scrollY >= 60) {
 				navbar[0].classList.add("minimized");
 				let menu = document.getElementById("menu");
@@ -579,7 +581,9 @@ class Entity extends Component {
 		let subelementListToDisplay = document.querySelector(
 			".highlight ~ .subelement-list"
 		);
-		subelementListToDisplay.style.display = "inline";
+		if (subelementListToDisplay) {
+			subelementListToDisplay.style.display = "inline";
+		}
 	}
 
 	adaptMenuWidth() {
