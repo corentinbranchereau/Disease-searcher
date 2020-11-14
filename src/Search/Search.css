@@ -71,7 +71,7 @@
 	position: absolute;
 	right: 10vw;
 	top: 10vh;
-	width: 30vw;
+	width: 15vw;
 	transition: 1s all ease;
 }
 
@@ -79,7 +79,7 @@
 	position: absolute;
 	right: 5vw;
 	top: 5vh;
-	width: 10vw;
+	width: 80px;
 }
 
 .home-search-bar {
@@ -273,12 +273,13 @@ input:checked + .slider:before {
 /* Results container */
 
 .results-container {
-	background-color: white;
-	margin-top: 22vh;
+	margin-top: 18vh;
+	overflow-y: scroll;
+	height: 82vh;
 }
 
 .results-container .tilesWrap {
-	padding: 0;
+	padding-top: 30px;
 	margin: 0;
 	list-style: none;
 	text-align: center;

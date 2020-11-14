@@ -78,6 +78,10 @@ class Search extends React.Component {
 		}
 	};
 
+	handleDataListClick = (event) => {
+		console.log("datalist", event);
+	};
+
 	handleTyping(typing) {
 		this.setState({ typing });
 	}
@@ -320,7 +324,10 @@ class Search extends React.Component {
 						</div> */}
 					</div>
 				</div>
-				<datalist id="suggestion-results" onClick={this.handleKeyDown}>
+				<datalist
+					id="suggestion-results"
+					onClick={this.handleDataListClick}
+				>
 					{resultsSuggestions}
 				</datalist>
 
