@@ -71,15 +71,28 @@
 	position: absolute;
 	right: 10vw;
 	top: 10vh;
-	width: 30vw;
+	width: 15vw;
 	transition: 1s all ease;
+	animation: App-logo-pulsate infinite 3s linear;
+}
+
+@keyframes App-logo-pulsate {
+	from {
+		transform: scale(0.85);
+	}
+	50% {
+		transform: scale(1);
+	}
+	to {
+		transform: scale(0.85);
+	}
 }
 
 .search-header.topbar .search-logo {
 	position: absolute;
 	right: 5vw;
-	top: 5vh;
-	width: 10vw;
+	top: 3vh;
+	width: 5vw;
 }
 
 .home-search-bar {
