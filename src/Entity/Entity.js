@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { fetchAllInfos } from "../requests/Requests";
 import { fetchAssociatedGenesOnDisgenet } from "../requests/Requests";
 import { fetchAllInfosGenes } from "../requests/Requests";
-import logo from "../logo2.svg";
+import logo from "../logo-hexa.png";
 
 import "./Entity.css";
 import "./loading.css";
@@ -27,17 +27,26 @@ class Entity extends Component {
 			notFoundGenes: false, // if error from the request
 			language: "fr", // default language
 			homepageLink: "http://localhost:3000",
+
 			titlesTablesFrench: [
 				"Présentation générale",
 				"Autres informations",
 				"Gènes associés",
 				"Maladies similaires",
+				"Gène - Score",
+				"Description",
+				"Maladies",
+				"Gènes associés",
 			],
 			titlesTablesEnglish: [
 				"General presentation",
 				"Other informations",
 				"Associated gene",
 				"Similar Disease",
+				"Gene - Score",
+				"Description",
+				"Diseases",
+				"Shared genes",
 			],
 			keywordsEN: [
 				[
@@ -77,14 +86,35 @@ class Entity extends Component {
 				],
 			],
 
+			keywordsDelete: [
+				"timestamp",
+				"identifiers",
+				"sitelinks",
+				"statements",
+				"version",
+				"dateModified",
+			],
+
 			formats: [
-				[".jpg", ".jpeg", ".png", ".gif", ".svg"],
+				[
+					".jpg",
+					".jpeg",
+					".png",
+					".gif",
+					".svg",
+					".JPG",
+					".JPEG",
+					".PNG",
+					".GIF",
+					".SVG",
+				],
 				[".mp4", ".wav"],
 			],
 
 			indexSubject: -1,
 			enableSubelementList: true,
 			subelementsCreated: { fr: false, en: false },
+			maxGenesCommon: 0,
 		};
 
 		window.onscroll = this.handleScroll;
@@ -142,8 +172,6 @@ class Entity extends Component {
 				loadingWikidata: false,
 				language: lang,
 			});
-
-			//console.log(this.state.data);
 		} else this.setState({ notFound: true });
 	};
 
@@ -152,6 +180,7 @@ class Entity extends Component {
 		for (let i = 0; i < dataArray.length; i++) {
 			let g = dataArray[i].gene;
 			let gvalue = g.value;
+			let gUri = g.value;
 			if (g.type === "uri") {
 				let split = g.value.split("/");
 				split = split[split.length - 1];
@@ -164,10 +193,9 @@ class Entity extends Component {
 			if (desc) desc = desc.substring(1);
 			if (!data) data = {};
 			data[gvalue] = [];
-			data[gvalue].push([scoreValue, desc]);
+			data[gvalue].push([scoreValue, desc, gUri]);
 		}
 
-		console.log(data);
 		let empty = false;
 		if (this.state.loadingGenes && data === undefined) {
 			empty = true;
@@ -181,7 +209,7 @@ class Entity extends Component {
 	};
 
 	parseDataDisgenetSimilarDiseases = (dataArray) => {
-		let data;
+		let data = {};
 
 		for (let i = 0; i < dataArray.length; i++) {
 			let disease2 = dataArray[i].diseaseName2.value;
@@ -196,23 +224,34 @@ class Entity extends Component {
 
 				let partsURL = urlDisease2.split("/");
 				urlDisease2 = partsURL[partsURL.length - 1];
-
-				urlDisease2 =
-					"http://localhost:3000/entity/" +
-					disease2 +
-					"/" +
-					urlDisease2;
-
-				//console.log(urlDisease2);
+				urlDisease2 = "/entity/" + disease2 + "/" + urlDisease2;
 
 				data[disease2] = [];
 				data[disease2].push(urlDisease2);
 			}
-
 			data[disease2].push([geneUri, geneName]);
 		}
 
-		let empty = false;
+		let dataOrder = {};
+
+		let max = 0;
+
+		let empty = true;
+
+		for (const [key, value] of Object.entries(data)) {
+			if (!dataOrder[data[key].length]) {
+				dataOrder[data[key].length] = {};
+			}
+
+			dataOrder[data[key].length][key] = value;
+			if (data[key].length > max) {
+				max = data[key].length;
+				empty = false;
+			}
+		}
+
+		data = dataOrder;
+
 		if (this.state.loadingDisgenet && data === undefined) {
 			empty = true;
 			data = {};
@@ -221,13 +260,16 @@ class Entity extends Component {
 			dataDisgenetDiseases: data,
 			loadingDisgenet: false,
 			emptyDisgenet: empty,
+			maxGenesCommon: max,
 		});
 	};
 
 	changeLanguage = () => {
 		let newLanguage = this.state.language === "fr" ? "en" : "fr";
 		if (!this.state.data[newLanguage]) {
-			this.setState({ loadingWikidata: true, loadingDisgenet: true });
+			this.setState({
+				loadingWikidata: true,
+			});
 			fetchAllInfos(
 				this.state.entityIdD,
 				this.state.entityIdM,
@@ -253,12 +295,9 @@ class Entity extends Component {
 			l
 		).then((r) => this.parseDataAllInfos(r, l));
 
-		fetchAllInfosGenes(
-			this.state.entityIdD,
-			this.state.entityIdM,
-			this.state.entityName,
-			l
-		).then((r) => this.parseDataDisgenetSimilarDiseases(r));
+		fetchAllInfosGenes(this.state.entityIdD).then((r) =>
+			this.parseDataDisgenetSimilarDiseases(r)
+		);
 		//this.changeLanguage();
 		fetchAssociatedGenesOnDisgenet(this.state.entityIdD).then((r) =>
 			this.parseDataGenes(r)
@@ -328,6 +367,7 @@ class Entity extends Component {
 			if (this.state.enableSubelementList) {
 				this.displaySubelementList();
 			}
+			this.adaptMenuWidth();
 		}
 	}
 
@@ -338,6 +378,12 @@ class Entity extends Component {
 			keywords = this.state.keywordsFR;
 		} else {
 			keywords = this.state.keywordsEN;
+		}
+
+		for (let i = 0; i < this.state.keywordsDelete.length; i++) {
+			if (tag.includes(this.state.keywordsDelete[i])) {
+				return -2;
+			}
 		}
 
 		for (let i = 0; i < keywords.length; i++) {
@@ -367,10 +413,29 @@ class Entity extends Component {
 				}
 			}
 		}
+
+		if (url.startsWith("http")) {
+			return (
+				<a key={key + index} href={url}>
+					{url}
+				</a>
+			);
+		}
+
 		return <p key={key + index}>{url}</p>;
 	};
 
-	handleMenuClick = (menuIndex, subelementIndex) => {
+	handleMenuClick = (event, subelementIndex) => {
+		// find the index of the corresponding title in menu
+		let menuElementClicked = event.target.closest(".menu-element");
+		let allMenuElements = document.getElementsByClassName("menu-element");
+		let elementIndex = -1;
+		for (let i = 0; i < allMenuElements.length; i++) {
+			if (allMenuElements[i] === menuElementClicked) {
+				elementIndex = i;
+				break;
+			}
+		}
 		let infoTables = document.getElementsByClassName("info-table");
 		let navbar = document.getElementsByTagName("nav")[0];
 		let offset = navbar.offsetHeight + 20;
@@ -379,7 +444,7 @@ class Entity extends Component {
 			// click on a "title"
 			window.scrollTo({
 				top:
-					infoTables[menuIndex].getBoundingClientRect().top +
+					infoTables[elementIndex].getBoundingClientRect().top +
 					window.scrollY -
 					offset,
 			});
@@ -409,7 +474,7 @@ class Entity extends Component {
 
 			// get the dl element in the info-table
 			let infoTableDlElement =
-				infoTables[menuIndex].childNodes[1].childNodes[0];
+				infoTables[elementIndex].childNodes[1].childNodes[0];
 
 			// scroll to the child at index "subelementIndex"
 			window.scrollTo({
@@ -462,6 +527,20 @@ class Entity extends Component {
 		if (this.state.enableSubelementList) {
 			this.displaySubelementList();
 		}
+
+		let navbar = document.getElementsByTagName("nav");
+
+		if (navbar) {
+			if (window.scrollY >= 60) {
+				navbar[0].classList.add("minimized");
+				let menu = document.getElementById("menu");
+				menu.style.top = "76px";
+			} else {
+				navbar[0].classList.remove("minimized");
+				let menu = document.getElementById("menu");
+				menu.style.top = "171px";
+			}
+		}
 	};
 
 	createSubelementLists() {
@@ -476,7 +555,8 @@ class Entity extends Component {
 				if (dlChildNodes[j].tagName === "DT") {
 					let subelement = document.createElement("LI");
 					subelement.innerHTML = dlChildNodes[j].textContent;
-					subelement.onclick = () => this.handleMenuClick(i, j);
+					subelement.onclick = (event) =>
+						this.handleMenuClick(event, j);
 					subelementLists[i].appendChild(subelement);
 				}
 			}
@@ -502,6 +582,37 @@ class Entity extends Component {
 		subelementListToDisplay.style.display = "inline";
 	}
 
+	adaptMenuWidth() {
+		let menuTitles = Array.from(
+			document.querySelectorAll(".menu-element > p ")
+		);
+		let maxWidth = -1;
+		menuTitles.forEach((title) => {
+			if (title.offsetWidth > maxWidth) {
+				maxWidth = title.offsetWidth;
+			}
+		});
+
+		let menu = document.getElementById("menu");
+
+		let menuPaddingLeft = parseInt(
+			window
+				.getComputedStyle(menu, null)
+				.getPropertyValue("padding-left")
+				.split("px")[0]
+		);
+		let menuPaddingRight = parseInt(
+			window
+				.getComputedStyle(menu, null)
+				.getPropertyValue("padding-right")
+				.split("px")[0]
+		);
+
+		maxWidth += menuPaddingLeft + menuPaddingRight;
+
+		menu.style.width = maxWidth + "px";
+	}
+
 	render() {
 		let OthersInfos = [];
 		let IdentificationInfos = [];
@@ -509,6 +620,12 @@ class Entity extends Component {
 		let AssociatedGene = [];
 
 		let DiseasesGenesInfos = [];
+
+		let titles;
+
+		this.state.language === "fr"
+			? (titles = this.state.titlesTablesFrench)
+			: (titles = this.state.titlesTablesEnglish);
 
 		if (
 			this.state.loadingDisgenet ||
@@ -526,10 +643,28 @@ class Entity extends Component {
 
 			let dataGenes = this.state.dataGenes;
 
+			let infoValuesArray = [];
+			let infoTag = (
+				<dt className="headerDisease" key={"header"}>
+					{titles[4]}
+				</dt>
+			);
+			let balise = <p className="headerDisease">{titles[5]}</p>;
+			infoValuesArray.push(balise);
+			let infoValues = React.createElement(
+				"dd",
+				{ key: "headerDef" },
+				infoValuesArray
+			);
+
+			AssociatedGene.push(infoTag);
+			AssociatedGene.push(infoValues);
+
 			for (const [key, value] of Object.entries(dataGenes)) {
 				let infoTag = (
 					<dt key={key}>
-						{key} - Score : {value[0][0]}
+						<a href={value[0][2]}>{key}</a> - <b>Score :</b>{" "}
+						{value[0][0]}
 					</dt>
 				);
 
@@ -540,33 +675,66 @@ class Entity extends Component {
 			}
 
 			let dataDis = this.state.dataDisgenetDiseases;
+			let NbDiseasesDisplayMax = 10;
 
-			for (const [key, value] of Object.entries(dataDis)) {
-				let infoValuesArray = [];
+			infoValuesArray = [];
+			infoTag = (
+				<dt className="headerDisease" key={"header"}>
+					{titles[6]}
+				</dt>
+			);
+			balise = <p className="headerDisease">{titles[7]}</p>;
+			infoValuesArray.push(balise);
+			infoValues = React.createElement(
+				"dd",
+				{ key: "headerDef" },
+				infoValuesArray
+			);
 
-				let infoTag = (
-					<dt key={key} href={value[0]}>
-						{key}
-					</dt>
-				);
+			DiseasesGenesInfos.push(infoTag);
+			DiseasesGenesInfos.push(infoValues);
 
-				for (let i = 1; i < value.length; i++) {
-					let balise = (
-						<p href={value[i][0]} key={key + i}>
-							{value[i][1]}
-						</p>
-					);
-					infoValuesArray.push(balise);
+			for (let k = this.state.maxGenesCommon; k >= 0; k--) {
+				if (dataDis[k]) {
+					for (const [key, value] of Object.entries(dataDis[k])) {
+						if (NbDiseasesDisplayMax <= 0) {
+							break;
+						}
+						let infoValuesArray = [];
+
+						let infoTag = (
+							<dt key={key}>
+								<a href={value[0]}>
+									{key.charAt(0).toUpperCase() + key.slice(1)}
+								</a>
+							</dt>
+						);
+
+						for (let i = 1; i < value.length; i++) {
+							let balise = (
+								<p>
+									<a href={value[i][0]} key={key + i}>
+										{value[i][1]}
+									</a>
+								</p>
+							);
+							infoValuesArray.push(balise);
+						}
+
+						let infoValues = React.createElement(
+							"dd",
+							{ key: key + "Def" },
+							infoValuesArray
+						);
+
+						DiseasesGenesInfos.push(infoTag);
+						DiseasesGenesInfos.push(infoValues);
+						NbDiseasesDisplayMax--;
+					}
+					if (NbDiseasesDisplayMax <= 0) {
+						break;
+					}
 				}
-
-				let infoValues = React.createElement(
-					"dd",
-					{ key: key + "Def" },
-					infoValuesArray
-				);
-
-				DiseasesGenesInfos.push(infoTag);
-				DiseasesGenesInfos.push(infoValues);
 			}
 
 			for (const [key, value] of Object.entries(data)) {
@@ -595,9 +763,18 @@ class Entity extends Component {
 							subject = subjectFound;
 						}
 
-						infoTag = <dt key={key}>{value.propLabel.value}</dt>;
+						infoTag = (
+							<dt key={key}>
+								{value.propLabel.value.charAt(0).toUpperCase() +
+									value.propLabel.value.slice(1)}
+							</dt>
+						);
 					} else {
-						infoTag = <dt key={key}>{key}</dt>;
+						infoTag = (
+							<dt key={key}>
+								{key.charAt(0).toUpperCase() + key.slice(1)}
+							</dt>
+						);
 					}
 
 					infoValues = React.createElement(
@@ -616,7 +793,11 @@ class Entity extends Component {
 						infoValuesArray.push(balise);
 					}
 
-					infoTag = <dt key={key}>{key}</dt>;
+					infoTag = (
+						<dt key={key}>
+							{key.charAt(0).toUpperCase() + key.slice(1)}
+						</dt>
+					);
 					infoValues = React.createElement(
 						"dd",
 						{ key: key + "Def" },
@@ -645,6 +826,9 @@ class Entity extends Component {
 						OthersInfos.push(infoTag);
 						OthersInfos.push(infoValues);
 						break;
+					case -2:
+						break;
+
 					default:
 						console.log("Error in switch subject");
 						break;
@@ -669,18 +853,10 @@ class Entity extends Component {
 				PresentationInfos
 			);
 
-			let titles;
-
-			this.state.language === "fr"
-				? (titles = this.state.titlesTablesFrench)
-				: (titles = this.state.titlesTablesEnglish);
-
 			let reactElementAssociatedGene = [];
 			if (this.state.emptyGenes) {
-				console.log("NULL ASSOCIATED GENES");
 				reactElementAssociatedGene = null;
 			} else {
-				console.log("NON NULL ASSOCIATED GENES");
 				let infoAssociatedGene = React.createElement(
 					"dl",
 					{ className: "grid-container" },
@@ -700,10 +876,8 @@ class Entity extends Component {
 
 			let reactElementSimilarDisease = [];
 			if (this.state.emptyDisgenet) {
-				console.log("NULL ASSOCIATED DISEASE");
 				reactElementSimilarDisease = null;
 			} else {
-				console.log("NON NULL ASSOCIATED DISEASE");
 				let infoListGenesDiseases = React.createElement(
 					"dl",
 					{ className: "grid-container" },
@@ -755,8 +929,8 @@ class Entity extends Component {
 							<ul>
 								<li className="menu-element">
 									<p
-										onClick={() => {
-											this.handleMenuClick(0, -1);
+										onClick={(event) => {
+											this.handleMenuClick(event, -1);
 										}}
 									>
 										{titles[0]}
@@ -765,41 +939,48 @@ class Entity extends Component {
 								</li>
 								<li className="menu-element">
 									<p
-										onClick={() => {
-											this.handleMenuClick(1, -1);
-										}}
-									>
-										Identification
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
-								<li className="menu-element">
-									<p
-										onClick={() => {
-											this.handleMenuClick(2, -1);
+										onClick={(event) => {
+											this.handleMenuClick(event, -1);
 										}}
 									>
 										{titles[1]}
 									</p>
 									<ul className="subelement-list"></ul>
 								</li>
+
+								{!this.state.emptyGenes ? (
+									<li className="menu-element">
+										<p
+											onClick={(event) => {
+												this.handleMenuClick(event, -1);
+											}}
+										>
+											{titles[2]}
+										</p>
+										<ul className="subelement-list"></ul>
+									</li>
+								) : null}
+
+								{!this.state.emptyDisgenet ? (
+									<li className="menu-element">
+										<p
+											onClick={(event) => {
+												this.handleMenuClick(event, -1);
+											}}
+										>
+											{titles[3]}
+										</p>
+										<ul className="subelement-list"></ul>
+									</li>
+								) : null}
+
 								<li className="menu-element">
 									<p
-										onClick={() => {
-											this.handleMenuClick(3, -1);
+										onClick={(event) => {
+											this.handleMenuClick(event, -1);
 										}}
 									>
-										{titles[2]}
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
-								<li className="menu-element">
-									<p
-										onClick={() => {
-											this.handleMenuClick(4, -1);
-										}}
-									>
-										{titles[3]}
+										Identification
 									</p>
 									<ul className="subelement-list"></ul>
 								</li>
@@ -815,14 +996,6 @@ class Entity extends Component {
 									{infoListPresentation}
 								</div>
 							</div>
-							<div className="info-table">
-								<div className="info-table-header">
-									<h1>IDENTIFICATION</h1>
-								</div>
-								<div className="info-table-body">
-									{infoListIdentification}
-								</div>
-							</div>
 
 							<div className="info-table">
 								<div className="info-table-header">
@@ -836,6 +1009,15 @@ class Entity extends Component {
 							{reactElementAssociatedGene}
 
 							{reactElementSimilarDisease}
+
+							<div className="info-table">
+								<div className="info-table-header">
+									<h1>IDENTIFICATION</h1>
+								</div>
+								<div className="info-table-body">
+									{infoListIdentification}
+								</div>
+							</div>
 						</div>
 					</div>
 				</React.Fragment>

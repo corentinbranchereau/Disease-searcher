@@ -1,7 +1,7 @@
 import React from "react";
 import { fetchSearchResultsFromMesh } from "../requests/Requests";
 import "./Search.css";
-import logo from "../logo2.svg";
+import logo from "../logo-hexa.png";
 
 class Search extends React.Component {
 	constructor() {

@@ -9,6 +9,9 @@ video {
 	max-width: 400px;
 	height: auto;
 }
+a {
+	display: inline-block;
+}
 
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap");
 
@@ -30,6 +33,7 @@ nav {
 	align-items: center;
 	justify-content: left;
 	padding: 0em 2.5em 0em 2.5em;
+	transition: all 0.5s ease;
 }
 
 #nav-text:hover {
@@ -38,14 +42,16 @@ nav {
 }
 
 #logo {
-	width: 220px;
+	width: 100px;
+	transition: all 0.5s ease;
+	margin-left: 2em;
 }
 
 #logo:hover {
 	cursor: pointer;
-	-webkit-animation: spin 6s linear infinite;
-	-moz-animation: spin 6s linear infinite;
-	animation: spin 6s linear infinite;
+	-webkit-animation: pulsate 3s linear infinite;
+	-moz-animation: pulsate 3s linear infinite;
+	animation: pulsate 3s linear infinite;
 }
 
 @-moz-keyframes spin {
@@ -62,6 +68,41 @@ nav {
 	100% {
 		-webkit-transform: rotate(360deg);
 		transform: rotate(360deg);
+	}
+}
+
+@-moz-keyframes pulsate {
+	from {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.85);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+@-webkit-keyframes pulsate {
+	from {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.85);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+
+@keyframes pulsate {
+	from {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.85);
+	}
+	to {
+		transform: scale(1);
 	}
 }
 
@@ -88,6 +129,15 @@ dt {
 
 dd {
 	grid-column: span 3;
+}
+
+dd p {
+	padding: 0;
+	margin: 0em 0em 1em 0em;
+}
+
+.headerDisease {
+	font-weight: bold;
 }
 
 .info-table {
@@ -125,7 +175,8 @@ dd {
 	padding: 1em 2em 1em 2em;
 	color: white;
 	overflow-y: scroll;
-	width: 13vw;
+	flex-shrink: 0;
+	transition: all 0.5s ease;
 }
 
 #menu ul {
@@ -137,9 +188,22 @@ dd {
 	list-style-type: none;
 }
 
+nav.minimized #nav-container {
+	height: 75px;
+	font-size: 0.5em;
+}
+
+nav.minimized #logo {
+	width: 50px;
+}
+
 #menu p:hover {
 	color: rgb(0, 204, 255);
 	cursor: pointer;
+}
+
+.menu-element > p {
+	width: max-content;
 }
 
 #info-table-container {
