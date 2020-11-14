@@ -113,7 +113,8 @@ class Entity extends Component {
 
 			indexSubject: -1,
 			enableSubelementList: true,
-			subelementsCreated: { fr: false, en: false },
+			needCreateSubelements: true,
+			subelementsCreation: false,
 			maxGenesCommon: 0,
 		};
 
@@ -279,6 +280,7 @@ class Entity extends Component {
 		} else this.setState({ language: newLanguage });
 		this.setState({
 			enableSubelementList: true,
+			needCreateSubelements: true,
 		});
 	};
 
@@ -357,12 +359,15 @@ class Entity extends Component {
 		if (
 			!this.state.loadingDisgenet &&
 			!this.state.loadingWikidata &&
-			!this.state.loadingGenes
+			!this.state.loadingGenes &&
+			!this.state.subelementsCreation
 		) {
-			this.adaptLastBorder();
-			if (!this.state.subelementsCreated[this.state.language]) {
+			if (this.state.needCreateSubelements) {
+				this.setState({ subelementsCreation: true });
+				this.clearSubelementLists();
 				this.createSubelementLists();
 			}
+			this.adaptLastBorder();
 			this.highlightVisibleElement();
 			if (this.state.enableSubelementList) {
 				this.displaySubelementList();
@@ -545,6 +550,16 @@ class Entity extends Component {
 		}
 	};
 
+	clearSubelementLists() {
+		let subelementLists = document.getElementsByClassName(
+			"subelement-list"
+		);
+
+		for (let i = 0; i < subelementLists.length; i++) {
+			subelementLists[i].innerHTML = null;
+		}
+	}
+
 	createSubelementLists() {
 		let dlElements = document.getElementsByTagName("dl");
 		let subelementLists = document.getElementsByClassName(
@@ -563,9 +578,10 @@ class Entity extends Component {
 				}
 			}
 		}
-		let subelementsCreated = this.state.subelementsCreated;
-		subelementsCreated[this.state.language] = true;
-		this.setState({ subelementsCreated: subelementsCreated });
+		this.setState({
+			needCreateSubelements: false,
+			subelementsCreation: false,
+		});
 	}
 
 	displaySubelementList() {
