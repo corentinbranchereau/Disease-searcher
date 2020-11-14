@@ -649,7 +649,11 @@ class Entity extends Component {
 					{titles[4]}
 				</dt>
 			);
-			let balise = <p className="headerDisease">{titles[5]}</p>;
+			let balise = (
+				<p key={titles[5]} className="headerDisease">
+					{titles[5]}
+				</p>
+			);
 			infoValuesArray.push(balise);
 			let infoValues = React.createElement(
 				"dd",
@@ -663,8 +667,10 @@ class Entity extends Component {
 			for (const [key, value] of Object.entries(dataGenes)) {
 				let infoTag = (
 					<dt key={key}>
-						<a href={value[0][2]}>{key}</a> - <b>Score :</b>{" "}
-						{value[0][0]}
+						<a href={value[0][2]} key={key + value[0][0]}>
+							{key}
+						</a>{" "}
+						- <b>Score :</b> {value[0][0]}
 					</dt>
 				);
 
@@ -683,7 +689,11 @@ class Entity extends Component {
 					{titles[6]}
 				</dt>
 			);
-			balise = <p className="headerDisease">{titles[7]}</p>;
+			balise = (
+				<p key={titles[7]} className="headerDisease">
+					{titles[7]}
+				</p>
+			);
 			infoValuesArray.push(balise);
 			infoValues = React.createElement(
 				"dd",
@@ -704,7 +714,7 @@ class Entity extends Component {
 
 						let infoTag = (
 							<dt key={key}>
-								<a href={value[0]}>
+								<a href={value[0]} key={key + value[0]}>
 									{key.charAt(0).toUpperCase() + key.slice(1)}
 								</a>
 							</dt>
@@ -712,7 +722,7 @@ class Entity extends Component {
 
 						for (let i = 1; i < value.length; i++) {
 							let balise = (
-								<p>
+								<p key={key + value[i][0]}>
 									<a href={value[i][0]} key={key + i}>
 										{value[i][1]}
 									</a>
