@@ -33,7 +33,7 @@ class Entity extends Component {
 				"Autres informations",
 				"Gènes associés",
 				"Maladies similaires",
-				"Gène-Score",
+				"Gène - Score",
 				"Description",
 				"Maladies",
 				"Gènes associés",
@@ -43,7 +43,7 @@ class Entity extends Component {
 				"Other informations",
 				"Associated gene",
 				"Similar Disease",
-				"Gene-Score",
+				"Gene - Score",
 				"Description",
 				"Diseases",
 				"Shared genes",
@@ -169,19 +169,21 @@ class Entity extends Component {
 		for (let i = 0; i < dataArray.length; i++) {
 			let g = dataArray[i].gene;
 			let gvalue = g.value;
+			let gUri = g.value;
 			if (g.type === "uri") {
 				let split = g.value.split("/");
 				split = split[split.length - 1];
 				gvalue = split.toUpperCase();
 			}
 
-			let scoreValue = dataArray[i].scoreValue.value;
+			let scoreValue = dataArray[i].scoreValue.value
 
 			let desc = dataArray[i].description.value;
 			if (desc) desc = desc.substring(1);
+
 			if (!data) data = {};
 			data[gvalue] = [];
-			data[gvalue].push([scoreValue, desc]);
+			data[gvalue].push([scoreValue, desc, gUri]);
 		}
 
 		let empty = false;
@@ -648,7 +650,7 @@ class Entity extends Component {
 			for (const [key, value] of Object.entries(dataGenes)) {
 				let infoTag = (
 					<dt key={key}>
-						{key} - Score : {value[0][0]}
+						<a href={value[0][2]}>{key}</a> - <b>Score :</b> {value[0][0]}
 					</dt>
 				);
 
@@ -688,7 +690,7 @@ class Entity extends Component {
 
 						let infoTag = (
 							<dt key={key}>
-								<a href={value[0]}>{key}</a>
+								<a href={value[0]}>{key.charAt(0).toUpperCase()+key.slice(1)}</a>
 							</dt>
 						);
 
@@ -745,9 +747,9 @@ class Entity extends Component {
 							subject = subjectFound;
 						}
 
-						infoTag = <dt key={key}>{value.propLabel.value}</dt>;
+						infoTag = <dt key={key}>{value.propLabel.value.charAt(0).toUpperCase()+value.propLabel.value.slice(1)}</dt>;
 					} else {
-						infoTag = <dt key={key}>{key}</dt>;
+						infoTag = <dt key={key}>{key.charAt(0).toUpperCase()+key.slice(1)}</dt>;
 					}
 
 					infoValues = React.createElement(
@@ -766,7 +768,7 @@ class Entity extends Component {
 						infoValuesArray.push(balise);
 					}
 
-					infoTag = <dt key={key}>{key}</dt>;
+					infoTag = <dt key={key}>{key.charAt(0).toUpperCase()+key.slice(1)}</dt>;
 					infoValues = React.createElement(
 						"dd",
 						{ key: key + "Def" },
