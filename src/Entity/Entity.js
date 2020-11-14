@@ -531,14 +531,16 @@ class Entity extends Component {
 		let navbar = document.getElementsByTagName("nav");
 
 		if (navbar) {
-			if (window.scrollY >= 60) {
+			if (window.scrollY >= 50) {
 				navbar[0].classList.add("minimized");
 				let menu = document.getElementById("menu");
 				menu.style.top = "76px";
 			} else {
-				navbar[0].classList.remove("minimized");
-				let menu = document.getElementById("menu");
-				menu.style.top = "171px";
+				if (navbar[0].offsetHeight === 76) {
+					navbar[0].classList.remove("minimized");
+					let menu = document.getElementById("menu");
+					menu.style.top = "171px";
+				}
 			}
 		}
 	};
