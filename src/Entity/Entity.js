@@ -96,7 +96,18 @@ class Entity extends Component {
 			],
 
 			formats: [
-				[".jpg", ".jpeg", ".png", ".gif", ".svg"],
+				[
+					".jpg",
+					".jpeg",
+					".png",
+					".gif",
+					".svg",
+					".JPG",
+					".JPEG",
+					".PNG",
+					".GIF",
+					".SVG",
+				],
 				[".mp4", ".wav"],
 			],
 
