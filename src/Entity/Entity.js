@@ -422,7 +422,7 @@ class Entity extends Component {
 			);
 		}
 
-		return <p key={key + index}>{url}</p>;
+		return <p key={key + index}>{url.charAt(0).toUpperCase()+url.slice(1)}</p>;
 	};
 
 	handleMenuClick = (event, subelementIndex) => {
@@ -726,7 +726,7 @@ class Entity extends Component {
 							let balise = (
 								<p key={key + value[i][0]}>
 									<a href={value[i][0]} key={key + i}>
-										{value[i][1]}
+										{value[i][1].charAt(0).toUpperCase()+value[i][1].slice(1)}
 									</a>
 								</p>
 							);
