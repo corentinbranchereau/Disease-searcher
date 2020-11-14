@@ -213,6 +213,7 @@ nav.minimized #logo {
 
 #info-table-container {
 	margin: auto;
+	width: 100%;
 }
 
 .highlight {
