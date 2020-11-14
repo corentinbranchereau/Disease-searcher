@@ -288,7 +288,7 @@ input:checked + .slider:before {
 .results-container {
 	margin-top: 18vh;
 	overflow-y: scroll;
-	height: 82vh;
+	height: 78vh;
 }
 
 .results-container .tilesWrap {
