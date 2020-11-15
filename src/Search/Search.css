@@ -25,6 +25,15 @@
 	border-bottom: 1px solid white;
 }
 
+.bold-desc {
+	font-weight: 900;
+	color: white;
+}
+
+.disease h3 {
+	text-transform: capitalize;
+}
+
 @keyframes createNav {
 	from {
 		height: 100vh;
@@ -55,6 +64,10 @@
 	left: 2vw;
 	top: 2vh;
 	font-size: 12px;
+}
+
+.disease p::first-letter {
+	text-transform: capitalize;
 }
 
 @media (max-width: 520px) {
@@ -150,7 +163,7 @@
 	color: white;
 }
 
-#search-options-container {
+.search-options-container {
 	width: 180px;
 	padding: 20px;
 	border-radius: 30px;
@@ -166,8 +179,11 @@
 	animation-duration: 0.5s;
 	z-index: 1;
 }
+.search-options-container.topbar {
+	top: 90px;
+}
 
-#search-options-container:after {
+.search-options-container:after {
 	content: " ";
 	width: 50px;
 	height: 50px;
@@ -192,9 +208,11 @@
 
 #search-options-container .label {
 	position: absolute;
-	margin-left: 60px;
+	margin-left: 70px;
 	color: #252727;
 	z-index: 1;
+	top: -10px;
+	font-size: 20px;
 }
 
 /* The switch - the box around the slider */
@@ -218,10 +236,10 @@
 .slider {
 	position: absolute;
 	cursor: pointer;
-	top: 0;
+	top: 0px;
 	left: 0;
 	right: 0;
-	bottom: 0;
+	bottom: 0px;
 	background-color: #ccc;
 	-webkit-transition: 0.4s;
 	transition: 0.4s;
@@ -268,6 +286,11 @@ input:checked + .slider:before {
 
 .slider.round:before {
 	border-radius: 50%;
+}
+
+.reverse-description {
+	font-size: 13px;
+	color: black;
 }
 
 /* Results container */

@@ -45,6 +45,49 @@ export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
 	}
 }
 
+export async function fetchReversedSearchResult(userEntry, onResultsFound) {
+	try {
+		let requestUrl = "https://id.nlm.nih.gov/mesh/sparql?query=";
+		let suffixUrl =
+			"&format=JSON&year=current&limit=50&offset=0&inference=true";
+		let query =
+			`PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+		    PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>
+            PREFIX owl:<http://www.w3.org/2002/07/owl#>
+            PREFIX meshv:<http://id.nlm.nih.gov/mesh/vocab#>
+
+            SELECT ?dId ?mId ?label ?comment
+            FROM <http://id.nlm.nih.gov/mesh>
+            WHERE {
+              ?descriptor a meshv:Descriptor;
+                            meshv:identifier ?dId;
+                            rdfs:label ?label;
+                            meshv:active 1;
+                            meshv:preferredConcept ?concept.
+              ?concept meshv:identifier ?mId;
+                       meshv:scopeNote ?comment.
+              FILTER(REGEX(?comment,"` +
+			userEntry +
+			`","i")).
+            }
+            ORDER BY ?dId ?mId`;
+		let encodedQuery = encodeURIComponent(query);
+		fetch(requestUrl + encodedQuery + suffixUrl)
+			.then((res) => res.json())
+			.then(
+				(result) => {
+					onResultsFound(result.results.bindings, userEntry);
+				},
+				(error) => {
+					console.log("Error : ", error);
+				}
+			);
+	} catch (err) {
+		console.log("somethin went wrong", err);
+	}
+}
+
 export async function fetchSearchResultsDisease(userEntry, onResultsFound) {
 	try {
 		let requestUrl =

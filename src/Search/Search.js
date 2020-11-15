@@ -1,5 +1,8 @@
 import React from "react";
-import { fetchSearchResultsFromMesh } from "../requests/Requests";
+import {
+	fetchReversedSearchResult,
+	fetchSearchResultsFromMesh,
+} from "../requests/Requests";
 import "./Search.css";
 import logo from "../logo-hexa.png";
 
@@ -11,19 +14,24 @@ class Search extends React.Component {
 			query: "", // the text typed into the search input
 			searching: false, // defines if the "Rechercher" button has been pressed once
 			typing: false, //defines if the input bar has focus (ie: the user is going to type)
-			diseaseChecked: true, //define if the checkbox disease is checked or not
+			reverseSearch: false, //define if the checkbox disease is checked or not
 			virusChecked: true, //define if the checkbox virus is checked or not
 			showOptions: false, // define if you can see the search options
 			loading: false, //defines if
 		};
 	}
 
-	fetchData = (valueToSearch) => {
+	fetchData = (valueToSearch, reverseSearch) => {
 		this.setState({ loading: true });
-		fetchSearchResultsFromMesh(valueToSearch, this.handleResults);
+		if (reverseSearch) {
+			fetchReversedSearchResult(valueToSearch, this.handleResults);
+		} else {
+			fetchSearchResultsFromMesh(valueToSearch, this.handleResults);
+		}
 	};
 
 	handleResults = (results, queryResponded) => {
+		console.log(results);
 		if (queryResponded === this.state.query) {
 			this.setState({ loading: false });
 			// console.log(results);
@@ -37,7 +45,7 @@ class Search extends React.Component {
 		if (this.search.value === "") {
 			this.setState({ searching: false });
 		} else {
-			this.fetchData(this.search.value);
+			this.fetchData(this.search.value, this.state.reverseSearch);
 		}
 	};
 	handleKeyDown = (event) => {
@@ -86,9 +94,17 @@ class Search extends React.Component {
 		this.setState({ typing });
 	}
 
-	handleCheckboxDisease = () => {
-		let checked = !this.state.diseaseChecked;
-		this.setState({ diseaseChecked: checked });
+	handleCheckboxSearch = () => {
+		let checked = !this.state.reverseSearch;
+		this.setState({ reverseSearch: checked });
+		if (this.state.searching) {
+			this.setState({ query: this.search.value, searchResults: [] });
+			if (this.search.value === "") {
+				this.setState({ searching: false });
+			} else {
+				this.fetchData(this.search.value, checked);
+			}
+		}
 	};
 
 	handleCheckboxVirus = () => {
@@ -102,7 +118,6 @@ class Search extends React.Component {
 
 	handleOptionClick = () => {
 		this.setState({ showOptions: !this.state.showOptions });
-		console.log(this.state.showOptions);
 	};
 
 	handleRedirect = (link, comment) => {
@@ -116,20 +131,76 @@ class Search extends React.Component {
 		if (this.state.searchResults.length > 0) {
 			let searchResultsFiltered = this.state.searchResults.sort(
 				(a, b) => {
-					let nameA = a.label.value.toLowerCase();
-					let nameB = b.label.value.toLowerCase();
 					let recherche = this.state.query.toLowerCase();
-					let indexA = nameA.indexOf(recherche);
-					let indexB = nameB.indexOf(recherche);
-					if (indexA < indexB) return -1;
-					if (indexA > indexB) return 1;
-					if (indexA === indexB) return 0;
-					return 0;
+					if (this.state.reverseSearch) {
+						let descA = a.comment.value.toLowerCase();
+						let descB = b.comment.value.toLowerCase();
+						let nbOccurenceA = descA.split(recherche).length - 1;
+						let nbOccurenceB = descB.split(recherche).length - 1;
+						if (nbOccurenceA < nbOccurenceB) return 1;
+						if (nbOccurenceA > nbOccurenceB) return -1;
+						if (nbOccurenceA === nbOccurenceB) {
+							let indexA = descA.indexOf(recherche);
+							let indexB = descB.indexOf(recherche);
+							if (indexA < indexB) return -1;
+							if (indexA > indexB) return 1;
+							return 0;
+						}
+						return 0;
+					} else {
+						let nameA = a.label.value.toLowerCase();
+						let nameB = b.label.value.toLowerCase();
+						let indexA = nameA.indexOf(recherche);
+						let indexB = nameB.indexOf(recherche);
+
+						if (indexA < indexB) return -1;
+						if (indexA > indexB) return 1;
+						if (indexA === indexB) return 0;
+						return 0;
+					}
 				}
 			);
 			resultsToPrint = searchResultsFiltered.map((result) => {
 				let name = result.label.value;
 				let comment = result.comment.value;
+				if (this.state.reverseSearch) {
+					let commentArray = result.comment.value
+						.toLowerCase()
+						.split(this.state.query.toLowerCase());
+					comment = commentArray.map((comment, i) => {
+						if (i === commentArray.length - 1) {
+							return comment;
+						} else {
+							return (
+								<React.Fragment>
+									{comment}
+									<span className="bold-desc">
+										{" " + this.state.query}
+									</span>
+								</React.Fragment>
+							);
+						}
+					});
+				} else {
+					let nameArray = result.label.value
+						.toLowerCase()
+						.split(this.state.query.toLowerCase());
+					name = nameArray.map((comment, i) => {
+						if (i === nameArray.length - 1) {
+							return comment;
+						} else {
+							return (
+								<React.Fragment>
+									{comment}
+									<span className="bold-desc">
+										{this.state.query}
+									</span>
+								</React.Fragment>
+							);
+						}
+					});
+				}
+
 				let subStringSize = 200;
 				let href = "/entity/";
 				if (name) {
@@ -145,7 +216,9 @@ class Search extends React.Component {
 				if (name && !this.state.loading) {
 					return (
 						<li className="disease" key={name}>
-							<h2>{name.charAt(0).toUpperCase()}</h2>
+							<h2>
+								{result.label.value.charAt(0).toUpperCase()}
+							</h2>
 							<h3>{name}</h3>
 							<p>
 								{comment.length >= subStringSize
@@ -281,47 +354,44 @@ class Search extends React.Component {
 							) : (
 								<React.Fragment />
 							)}
-							{/* <div
+							<div
 								className="search-options"
 								onClick={this.handleOptionClick}
 							>
 								<span className="material-icons blue">
 									tune
 								</span>
-							</div> */}
+							</div>
 						</div>
-						{/* <div
+						<div
 							id={
 								this.state.showOptions
 									? "search-options-container"
 									: "hidden"
+							}
+							className={
+								this.state.searching
+									? "search-options-container topbar"
+									: "search-options-container"
 							}
 						>
 							<label className="switch">
 								<input
 									type="checkbox"
 									id="disease"
-									defaultChecked={this.state.diseaseChecked}
-									onChange={this.handleCheckboxDisease}
+									defaultChecked={this.state.reverseSearch}
+									onChange={this.handleCheckboxSearch}
 								/>
 								<span className="slider round blue" />
 								<label className="label" htmlFor="disease">
-									Disease
+									Reverse Search
 								</label>
 							</label>
-							<label className="switch">
-								<input
-									type="checkbox"
-									id="virus"
-									defaultChecked={this.state.virusChecked}
-									onChange={this.handleCheckboxVirus}
-								/>
-								<span className="slider round green" />
-								<label className="label" htmlFor="virus">
-									Virus
-								</label>
-							</label>
-						</div> */}
+							<p className="reverse-description">
+								With reverse search, you can search for a
+								keyword describing the disease and get its name
+							</p>
+						</div>
 					</div>
 				</div>
 				<datalist id="suggestion-results" onClick={this.handleKeyDown}>
