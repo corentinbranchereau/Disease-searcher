@@ -425,10 +425,13 @@ class Entity extends Component {
 		}
 
 		if (url.startsWith("http")) {
+			console.log(url);
 			return (
-				<a key={key + index} href={url}>
-					{url}
-				</a>
+				<p>
+					<a key={key + index} href={url}>
+						{url}
+					</a>
+				</p>
 			);
 		}
 
