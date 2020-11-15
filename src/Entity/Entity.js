@@ -17,6 +17,9 @@ class Entity extends Component {
 			loadingDisgenet: true, // true if we fetch the results
 			emptyDisgenet: true,
 			emptyGenes: true,
+			emptyPresentation: false,
+			emptyOtherInfos: false,
+			emptyIdentification: false,
 			entityIdD: this.props.match.params.idD, // url param : mesh id D
 			entityIdM: this.props.match.params.idM, // url param : mesh id M
 			entityName: this.props.match.params.name, // url param : name/label
@@ -935,6 +938,64 @@ class Entity extends Component {
 				);
 			}
 
+			let reactElementPresentation;
+			if (PresentationInfos.length === 0) {
+				if (!this.state.emptyPresentation) {
+					// avoid infinite loop
+					this.setState({ emptyPresentation: true });
+				}
+				reactElementPresentation = null;
+			} else {
+				reactElementPresentation = (
+					<div className="info-table">
+						<div className="info-table-header">
+							<h1>{titles[0].toUpperCase()}</h1>
+						</div>
+						<div className="info-table-body">
+							{infoListPresentation}
+						</div>
+					</div>
+				);
+			}
+
+			let reactElementOtherInfos;
+			if (OthersInfos.length === 0) {
+				if (!this.state.emptyOtherInfos) {
+					// avoid infinite loop
+					this.setState({ emptyOtherInfos: true });
+				}
+				reactElementOtherInfos = null;
+			} else {
+				reactElementOtherInfos = (
+					<div className="info-table">
+						<div className="info-table-header">
+							<h1>{titles[1].toUpperCase()}</h1>
+						</div>
+						<div className="info-table-body">{infoListOthers}</div>
+					</div>
+				);
+			}
+
+			let reactElementIdentification;
+			if (IdentificationInfos.length === 0) {
+				if (!this.state.emptyIdentification) {
+					// avoid infinite loop
+					this.setState({ emptyIdentification: true });
+				}
+				reactElementIdentification = null;
+			} else {
+				reactElementIdentification = (
+					<div className="info-table">
+						<div className="info-table-header">
+							<h1>IDENTIFICATION</h1>
+						</div>
+						<div className="info-table-body">
+							{infoListIdentification}
+						</div>
+					</div>
+				);
+			}
+
 			return (
 				<React.Fragment>
 					<nav>
@@ -967,26 +1028,31 @@ class Entity extends Component {
 					<div id="content-container">
 						<div id="menu">
 							<ul>
-								<li className="menu-element">
-									<p
-										onClick={(event) => {
-											this.handleMenuClick(event, -1);
-										}}
-									>
-										{titles[0]}
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
-								<li className="menu-element">
-									<p
-										onClick={(event) => {
-											this.handleMenuClick(event, -1);
-										}}
-									>
-										{titles[1]}
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
+								{!this.state.emptyPresentation ? (
+									<li className="menu-element">
+										<p
+											onClick={(event) => {
+												this.handleMenuClick(event, -1);
+											}}
+										>
+											{titles[0]}
+										</p>
+										<ul className="subelement-list"></ul>
+									</li>
+								) : null}
+
+								{!this.state.emptyOtherInfos ? (
+									<li className="menu-element">
+										<p
+											onClick={(event) => {
+												this.handleMenuClick(event, -1);
+											}}
+										>
+											{titles[1]}
+										</p>
+										<ul className="subelement-list"></ul>
+									</li>
+								) : null}
 
 								{!this.state.emptyGenes ? (
 									<li className="menu-element">
@@ -1014,50 +1080,31 @@ class Entity extends Component {
 									</li>
 								) : null}
 
-								<li className="menu-element">
-									<p
-										onClick={(event) => {
-											this.handleMenuClick(event, -1);
-										}}
-									>
-										Identification
-									</p>
-									<ul className="subelement-list"></ul>
-								</li>
+								{!this.state.emptyIdentification ? (
+									<li className="menu-element">
+										<p
+											onClick={(event) => {
+												this.handleMenuClick(event, -1);
+											}}
+										>
+											Identification
+										</p>
+										<ul className="subelement-list"></ul>
+									</li>
+								) : null}
 							</ul>
 						</div>
 
 						<div id="info-table-container">
-							<div className="info-table">
-								<div className="info-table-header">
-									<h1>{titles[0].toUpperCase()}</h1>
-								</div>
-								<div className="info-table-body">
-									{infoListPresentation}
-								</div>
-							</div>
+							{reactElementPresentation}
 
-							<div className="info-table">
-								<div className="info-table-header">
-									<h1>{titles[1].toUpperCase()}</h1>
-								</div>
-								<div className="info-table-body">
-									{infoListOthers}
-								</div>
-							</div>
+							{reactElementOtherInfos}
 
 							{reactElementAssociatedGene}
 
 							{reactElementSimilarDisease}
 
-							<div className="info-table">
-								<div className="info-table-header">
-									<h1>IDENTIFICATION</h1>
-								</div>
-								<div className="info-table-body">
-									{infoListIdentification}
-								</div>
-							</div>
+							{reactElementIdentification}
 						</div>
 					</div>
 				</React.Fragment>
