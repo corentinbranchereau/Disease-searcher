@@ -113,7 +113,8 @@ class Entity extends Component {
 
 			indexSubject: -1,
 			enableSubelementList: true,
-			subelementsCreated: { fr: false, en: false },
+			needCreateSubelements: true,
+			subelementsCreation: false,
 			maxGenesCommon: 0,
 		};
 
@@ -279,10 +280,13 @@ class Entity extends Component {
 		} else this.setState({ language: newLanguage });
 		this.setState({
 			enableSubelementList: true,
+			needCreateSubelements: true,
 		});
 	};
 
 	handleTitleClick = () => {
+		window.onscroll = null;
+		document.getElementById("root").style.overflow = "hidden";
 		this.props.history.push(this.state.homepageLink);
 	};
 
@@ -357,12 +361,15 @@ class Entity extends Component {
 		if (
 			!this.state.loadingDisgenet &&
 			!this.state.loadingWikidata &&
-			!this.state.loadingGenes
+			!this.state.loadingGenes &&
+			!this.state.subelementsCreation
 		) {
-			this.adaptLastBorder();
-			if (!this.state.subelementsCreated[this.state.language]) {
+			if (this.state.needCreateSubelements) {
+				this.setState({ subelementsCreation: true });
+				this.clearSubelementLists();
 				this.createSubelementLists();
 			}
+			this.adaptLastBorder();
 			this.highlightVisibleElement();
 			if (this.state.enableSubelementList) {
 				this.displaySubelementList();
@@ -422,7 +429,11 @@ class Entity extends Component {
 			);
 		}
 
-		return <p key={key + index}>{url}</p>;
+		return (
+			<p key={key + index}>
+				{url.charAt(0).toUpperCase() + url.slice(1)}
+			</p>
+		);
 	};
 
 	handleMenuClick = (event, subelementIndex) => {
@@ -533,17 +544,29 @@ class Entity extends Component {
 		let navbar = document.getElementsByTagName("nav");
 
 		if (navbar && navbar[0]) {
-			if (window.scrollY >= 60) {
+			if (window.scrollY >= 50) {
 				navbar[0].classList.add("minimized");
 				let menu = document.getElementById("menu");
 				menu.style.top = "76px";
 			} else {
-				navbar[0].classList.remove("minimized");
-				let menu = document.getElementById("menu");
-				menu.style.top = "171px";
+				if (navbar[0].offsetHeight === 76) {
+					navbar[0].classList.remove("minimized");
+					let menu = document.getElementById("menu");
+					menu.style.top = "171px";
+				}
 			}
 		}
 	};
+
+	clearSubelementLists() {
+		let subelementLists = document.getElementsByClassName(
+			"subelement-list"
+		);
+
+		for (let i = 0; i < subelementLists.length; i++) {
+			subelementLists[i].innerHTML = null;
+		}
+	}
 
 	createSubelementLists() {
 		let dlElements = document.getElementsByTagName("dl");
@@ -563,9 +586,10 @@ class Entity extends Component {
 				}
 			}
 		}
-		let subelementsCreated = this.state.subelementsCreated;
-		subelementsCreated[this.state.language] = true;
-		this.setState({ subelementsCreated: subelementsCreated });
+		this.setState({
+			needCreateSubelements: false,
+			subelementsCreation: false,
+		});
 	}
 
 	displaySubelementList() {
@@ -618,6 +642,7 @@ class Entity extends Component {
 	}
 
 	render() {
+		document.getElementById("root").style.overflow = "visible";
 		let OthersInfos = [];
 		let IdentificationInfos = [];
 		let PresentationInfos = [];
@@ -728,7 +753,8 @@ class Entity extends Component {
 							let balise = (
 								<p key={key + value[i][0]}>
 									<a href={value[i][0]} key={key + i}>
-										{value[i][1]}
+										{value[i][1].charAt(0).toUpperCase() +
+											value[i][1].slice(1)}
 									</a>
 								</p>
 							);

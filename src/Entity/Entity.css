@@ -1,3 +1,7 @@
+body {
+	overflow-y: scroll;
+}
+
 #language {
 	position: absolute;
 	right: 30px;
@@ -16,8 +20,9 @@ a {
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap");
 
 nav {
-	position: sticky;
+	position: fixed;
 	top: 0px;
+	width: 100%;
 	background-color: #262a2b;
 	color: white;
 	font-family: "Rubik", sans-serif;
@@ -208,6 +213,7 @@ nav.minimized #logo {
 
 #info-table-container {
 	margin: auto;
+	width: 100%;
 }
 
 .highlight {
@@ -225,4 +231,13 @@ nav.minimized #logo {
 .subelement-list li:hover {
 	color: rgba(0, 204, 255, 0.5);
 	cursor: pointer;
+}
+
+#content-container {
+	padding-top: 171px;
+	transition: all 0.5s ease;
+}
+
+nav.minimized ~ #content-container {
+	padding-top: 76px;
 }
