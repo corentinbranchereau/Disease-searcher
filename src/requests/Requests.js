@@ -84,7 +84,7 @@ export async function fetchReversedSearchResult(userEntry, onResultsFound) {
 				}
 			);
 	} catch (err) {
-		console.log("somethin went wrong", err);
+		console.log("something went wrong", err);
 	}
 }
 
@@ -130,13 +130,11 @@ export async function fetchSearchResultsDisease(userEntry, onResultsFound) {
 				}
 			);
 	} catch (err) {
-		console.log("somethin went wrong", err);
+		console.log("something went wrong", err);
 	}
 }
 
 export function fetchAllInfosGenes(idD) {
-	//TODO Vérifier les caratères spéciaux dans id et name
-
 	const sparqlQueryDisgenet =
 		`
   SELECT DISTINCT ?gene ?geneName ?disease2 ?diseaseName2 ?meshURL
@@ -173,7 +171,6 @@ export function fetchAllInfosGenes(idD) {
 }
 
 export function fetchAllInfos(idD, idM, name, lang) {
-	//TODO Vérifier les caratères spéciaux dans id et name
 	const sparqlQuery =
 		`SELECT DISTINCT ?p ?propLabel ?v ?vLabel WHERE {
 

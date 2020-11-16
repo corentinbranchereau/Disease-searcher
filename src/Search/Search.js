@@ -12,12 +12,12 @@ class Search extends React.Component {
 		this.state = {
 			searchResults: [], // an array where the results found are added
 			query: "", // the text typed into the search input
-			searching: false, // defines if the "Rechercher" button has been pressed once
-			typing: false, //defines if the input bar has focus (ie: the user is going to type)
-			reverseSearch: false, //define if the checkbox disease is checked or not
-			virusChecked: true, //define if the checkbox virus is checked or not
-			showOptions: false, // define if you can see the search options
-			loading: false, //defines if
+			searching: false, // true if the "Rechercher" button has been pressed once
+			typing: false, // true if the input bar has focus (ie: the user is going to type)
+			reverseSearch: false, // true if the checkbox disease is checked or not
+			virusChecked: true, // true if the checkbox virus is checked or not
+			showOptions: false, // true if you can see the search options
+			loading: false, // true if the page is loading
 		};
 	}
 
@@ -31,11 +31,9 @@ class Search extends React.Component {
 	};
 
 	handleResults = (results, queryResponded) => {
-		console.log(results);
 		if (queryResponded === this.state.query) {
-			this.setState({ loading: false });
-			// console.log(results);
 			//verifying that the response corresponds to the displayed search word
+			this.setState({ loading: false });
 			this.setState({ searchResults: results });
 		}
 	};
@@ -48,8 +46,8 @@ class Search extends React.Component {
 			this.fetchData(this.search.value, this.state.reverseSearch);
 		}
 	};
+
 	handleKeyDown = (event) => {
-		console.log(event);
 		if (event.key === "Enter") {
 			this.setState({ searching: true });
 			this.search.blur();
@@ -84,10 +82,6 @@ class Search extends React.Component {
 				this.props.history.push(link);
 			}, 200);
 		}
-	};
-
-	handleDataListClick = (event) => {
-		console.log("datalist", event);
 	};
 
 	handleTyping(typing) {
@@ -172,9 +166,14 @@ class Search extends React.Component {
 							return comment;
 						} else {
 							return (
-								<React.Fragment>
+								<React.Fragment
+									key={comment + i + "ReactFragment"}
+								>
 									{comment}
-									<span className="bold-desc">
+									<span
+										className="bold-desc"
+										key={comment + i}
+									>
 										{" " + this.state.query}
 									</span>
 								</React.Fragment>
@@ -190,9 +189,14 @@ class Search extends React.Component {
 							return comment;
 						} else {
 							return (
-								<React.Fragment>
+								<React.Fragment
+									key={comment + i + "ReactFragment"}
+								>
 									{comment}
-									<span className="bold-desc">
+									<span
+										className="bold-desc"
+										key={comment + i}
+									>
 										{this.state.query}
 									</span>
 								</React.Fragment>
@@ -246,30 +250,11 @@ class Search extends React.Component {
 							let nameEN = result.label.value.toLowerCase();
 							let recherche = this.state.query.toLowerCase();
 							let index = nameEN.indexOf(recherche);
-							//let wordList;
-							if (index !== -1) {
-								//wordList = nameEN.split(this.state.query, 2);
-								return (
-									<option
-										// className="suggestion-single-result"
-										key={nameEN}
-										value={nameEN}
-									/>
 
-									// {wordList[0]}
-									// <span style={{ fontWeight: 900 }}>
-									// 	{this.state.query}
-									// </span>
-									// {wordList[1]}
-								);
+							if (index !== -1) {
+								return <option key={nameEN} value={nameEN} />;
 							} else {
-								return (
-									<option
-										// className="suggestion-single-result"
-										key={nameEN}
-										value={nameEN}
-									/>
-								);
+								return <option key={nameEN} value={nameEN} />;
 							}
 						}
 						return <React.Fragment />;
@@ -408,7 +393,9 @@ class Search extends React.Component {
 							Pas de résultats
 						</h2>
 					) : this.state.searching ? (
-						<ul className="tilesWrap">{resultsToPrint}</ul>
+						<ul className="tilesWrap" key="tilesWrap">
+							{resultsToPrint}
+						</ul>
 					) : (
 						<React.Fragment />
 					)}

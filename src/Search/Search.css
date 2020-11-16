@@ -1,5 +1,4 @@
 .search-header {
-	/* background: url(http://localhost:3000/arriere-plan-header.png) left no-repeat; */
 	position: relative;
 	background-color: #262a2b;
 	background-size: 100% 100%;
@@ -15,7 +14,6 @@
 }
 
 .search-header.topbar {
-	/* height: 20vh !important; */
 	animation-name: createNav;
 	animation-duration: 1s;
 	height: 20vh;

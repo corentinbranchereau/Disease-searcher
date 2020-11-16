@@ -13,19 +13,19 @@ class Entity extends Component {
 
 		this.state = {
 			loadingGenes: true, // true if we fetch the results
-			loadingWikidata: true,
+			loadingWikidata: true, // true if we fetch the results
 			loadingDisgenet: true, // true if we fetch the results
-			emptyDisgenet: true,
-			emptyGenes: true,
-			emptyPresentation: false,
-			emptyOtherInfos: false,
-			emptyIdentification: false,
+			emptyDisgenet: true, // true if there are no results in disgenet
+			emptyGenes: true, // true if there are no genes associated
+			emptyPresentation: false, // true if there is no presentation in wikidata
+			emptyOtherInfos: false, // true if there are no other infos in wikidata
+			emptyIdentification: false, // true if there are no identifiers in wikidata
 			entityIdD: this.props.match.params.idD, // url param : mesh id D
 			entityIdM: this.props.match.params.idM, // url param : mesh id M
 			entityName: this.props.match.params.name, // url param : name/label
 			data: {}, // data parsed from the fetch
-			dataGenes: {}, //data parsed from disgenet genes fetch
-			dataDisgenetDiseases: {},
+			dataGenes: {}, // data parsed from disgenet genes fetch
+			dataDisgenetDiseases: {}, // data parsed from disgenet diseases fetch
 			notFound: false, // if error from the request
 			notFoundGenes: false, // if error from the request
 			language: "fr", // default language
@@ -114,10 +114,9 @@ class Entity extends Component {
 				[".mp4", ".wav"],
 			],
 
-			indexSubject: -1,
-			enableSubelementList: true,
-			needCreateSubelements: true,
-			subelementsCreation: false,
+			enableSubelementList: true, // if true, subelements list in menu appears
+			needCreateSubelements: true, // if true, create subelements lists
+			subelementsCreation: false, // true while creating subelements lists
 			maxGenesCommon: 0,
 		};
 
@@ -138,7 +137,6 @@ class Entity extends Component {
 			}
 
 			let v = dataArray[i].v;
-
 			let vLabel = dataArray[i].vLabel;
 
 			if (vLabel.value && !vLabel.value.startsWith("statement")) {
@@ -195,6 +193,7 @@ class Entity extends Component {
 
 			let desc = dataArray[i].description.value;
 			if (desc) desc = desc.substring(1);
+
 			if (!data) data = {};
 			data[gvalue] = [];
 			data[gvalue].push([scoreValue, desc, gUri]);
@@ -237,9 +236,7 @@ class Entity extends Component {
 		}
 
 		let dataOrder = {};
-
 		let max = 0;
-
 		let empty = true;
 
 		for (const [key, value] of Object.entries(data)) {
@@ -270,6 +267,7 @@ class Entity extends Component {
 
 	changeLanguage = () => {
 		let newLanguage = this.state.language === "fr" ? "en" : "fr";
+
 		if (!this.state.data[newLanguage]) {
 			this.setState({
 				loadingWikidata: true,
@@ -281,6 +279,7 @@ class Entity extends Component {
 				newLanguage
 			).then((r) => this.parseDataAllInfos(r, newLanguage));
 		} else this.setState({ language: newLanguage });
+
 		this.setState({
 			enableSubelementList: true,
 			needCreateSubelements: true,
@@ -295,6 +294,7 @@ class Entity extends Component {
 
 	componentDidMount() {
 		let l = this.state.language;
+
 		fetchAllInfos(
 			this.state.entityIdD,
 			this.state.entityIdM,
@@ -305,7 +305,7 @@ class Entity extends Component {
 		fetchAllInfosGenes(this.state.entityIdD).then((r) =>
 			this.parseDataDisgenetSimilarDiseases(r)
 		);
-		//this.changeLanguage();
+
 		fetchAssociatedGenesOnDisgenet(this.state.entityIdD).then((r) =>
 			this.parseDataGenes(r)
 		);
@@ -425,9 +425,8 @@ class Entity extends Component {
 		}
 
 		if (url.startsWith("http")) {
-			console.log(url);
 			return (
-				<p>
+				<p key={key + index + "p"}>
 					<a key={key + index} href={url}>
 						{url}
 					</a>
@@ -458,7 +457,7 @@ class Entity extends Component {
 		let offset = navbar.offsetHeight + 20;
 
 		if (subelementIndex === -1) {
-			// click on a "title"
+			// click on a title
 			window.scrollTo({
 				top:
 					infoTables[elementIndex].getBoundingClientRect().top +
