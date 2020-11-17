@@ -17,13 +17,15 @@ export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
             SELECT ?dId ?mId ?label ?comment
             FROM <http://id.nlm.nih.gov/mesh>
             WHERE {
-              ?descriptor a meshv:Descriptor;
-                            meshv:identifier ?dId;
-                            rdfs:label ?label;
-                            meshv:active 1;
-                            meshv:preferredConcept ?concept.
+				?descriptor a meshv:Descriptor;
+						meshv:identifier ?dId;
+						rdfs:label ?label;
+						meshv:active 1;
+						meshv:preferredConcept ?concept;
+						meshv:treeNumber ?treeId.
               ?concept meshv:identifier ?mId;
-                       meshv:scopeNote ?comment.
+					   meshv:scopeNote ?comment.
+			  FILTER(REGEX(str(?treeId), "mesh/[BCF]") ).
               FILTER(REGEX(?label,"` +
 			userEntry +
 			`","i")).
@@ -60,13 +62,15 @@ export async function fetchReversedSearchResult(userEntry, onResultsFound) {
             SELECT ?dId ?mId ?label ?comment
             FROM <http://id.nlm.nih.gov/mesh>
             WHERE {
-              ?descriptor a meshv:Descriptor;
-                            meshv:identifier ?dId;
-                            rdfs:label ?label;
-                            meshv:active 1;
-                            meshv:preferredConcept ?concept.
+				?descriptor a meshv:Descriptor;
+						meshv:identifier ?dId;
+						rdfs:label ?label;
+						meshv:active 1;
+						meshv:preferredConcept ?concept;
+						meshv:treeNumber ?treeId.
               ?concept meshv:identifier ?mId;
-                       meshv:scopeNote ?comment.
+					   meshv:scopeNote ?comment.
+			  FILTER(REGEX(str(?treeId), "mesh/[BCF]") ).
               FILTER(REGEX(?comment,"` +
 			userEntry +
 			`","i")).

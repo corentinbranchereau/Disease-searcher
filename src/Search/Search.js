@@ -7,8 +7,8 @@ import "./Search.css";
 import logo from "../logo-hexa.png";
 
 class Search extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			searchResults: [], // an array where the results found are added
 			query: "", // the text typed into the search input
@@ -18,8 +18,17 @@ class Search extends React.Component {
 			virusChecked: true, // true if the checkbox virus is checked or not
 			showOptions: false, // true if you can see the search options
 			loading: false, // true if the page is loading
+			queryParam: window.location.search.split("=")[1],
 		};
 	}
+
+	componentDidMount = () => {
+		if (this.state.queryParam) {
+			this.setState({ query: this.state.queryParam, searching: true });
+			this.fetchData(this.state.queryParam, false);
+			this.search.value = this.state.queryParam;
+		}
+	};
 
 	fetchData = (valueToSearch, reverseSearch) => {
 		this.setState({ loading: true });
@@ -42,6 +51,7 @@ class Search extends React.Component {
 		this.setState({ query: this.search.value, searchResults: [] });
 		if (this.search.value === "") {
 			this.setState({ searching: false });
+			this.props.history.push("/");
 		} else {
 			this.fetchData(this.search.value, this.state.reverseSearch);
 		}
@@ -51,6 +61,10 @@ class Search extends React.Component {
 		if (event.key === "Enter") {
 			this.setState({ searching: true });
 			this.search.blur();
+			this.props.history.push({
+				pathname: "/",
+				search: `?query=` + this.search.value,
+			});
 		}
 		if (event.key === "Unidentified") {
 			this.setState({ searching: true });
@@ -79,7 +93,7 @@ class Search extends React.Component {
 					}
 				}
 				let link = encodeURI(href);
-				this.props.history.push(link);
+				this.props.history.push(href);
 			}, 200);
 		}
 	};
@@ -170,11 +184,8 @@ class Search extends React.Component {
 									key={comment + i + "ReactFragment"}
 								>
 									{comment}
-									<span
-										className="bold-desc"
-										key={comment + i}
-									>
-										{" " + this.state.query}
+									<span className="bold-desc">
+										{this.state.query}
 									</span>
 								</React.Fragment>
 							);
@@ -193,10 +204,7 @@ class Search extends React.Component {
 									key={comment + i + "ReactFragment"}
 								>
 									{comment}
-									<span
-										className="bold-desc"
-										key={comment + i}
-									>
+									<span className="bold-desc">
 										{this.state.query}
 									</span>
 								</React.Fragment>
@@ -208,7 +216,7 @@ class Search extends React.Component {
 				let subStringSize = 200;
 				let href = "/entity/";
 				if (name) {
-					href += name + "/";
+					href += result.label.value + "/";
 					if (result.dId.value) {
 						href += result.dId.value + "/";
 						if (result.mId.value) {
@@ -219,7 +227,7 @@ class Search extends React.Component {
 				let link = encodeURI(href);
 				if (name && !this.state.loading) {
 					return (
-						<li className="disease" key={name}>
+						<li className="disease" key={result.label.value}>
 							<h2>
 								{result.label.value.charAt(0).toUpperCase()}
 							</h2>
@@ -242,7 +250,11 @@ class Search extends React.Component {
 				}
 				return <React.Fragment />;
 			});
-			if (this.state.typing && this.state.query !== "") {
+			if (
+				this.state.typing &&
+				this.state.query !== "" &&
+				!this.state.reverseSearch
+			) {
 				resultsSuggestions = searchResultsFiltered
 					.slice(0, 10)
 					.map((result) => {
@@ -379,9 +391,16 @@ class Search extends React.Component {
 						</div>
 					</div>
 				</div>
-				<datalist id="suggestion-results" onClick={this.handleKeyDown}>
-					{resultsSuggestions}
-				</datalist>
+				{!this.state.reverseSearch ? (
+					<datalist
+						id="suggestion-results"
+						onClick={this.handleKeyDown}
+					>
+						{resultsSuggestions}
+					</datalist>
+				) : (
+					<React.Fragment />
+				)}
 
 				<div
 					className={this.state.searching ? "results-container" : ""}
