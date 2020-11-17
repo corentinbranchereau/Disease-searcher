@@ -164,17 +164,14 @@ class Entity extends Component {
 				data[pvalue].propLabel = dataArray[i].propLabel;
 		}
 
-		if (true) {
-			// TODO // If there's at least a label then the response is good
-			let newData = { ...this.state.data };
-			newData[lang] = data;
+		let newData = { ...this.state.data };
+		newData[lang] = data;
 
-			this.setState({
-				data: newData,
-				loadingWikidata: false,
-				language: lang,
-			});
-		} else this.setState({ notFound: true });
+		this.setState({
+			data: newData,
+			loadingWikidata: false,
+			language: lang,
+		});
 	};
 
 	parseDataGenes = (dataArray) => {
