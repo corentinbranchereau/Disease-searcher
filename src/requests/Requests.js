@@ -29,7 +29,8 @@ export async function fetchSearchResultsFromMesh(userEntry, onResultsFound) {
               FILTER(REGEX(?label,"` +
 			userEntry +
 			`","i")).
-            }
+			}
+			GROUP BY ?dId ?mId ?label ?comment
             ORDER BY ?dId ?mId`;
 		let encodedQuery = encodeURIComponent(query);
 		fetch(requestUrl + encodedQuery + suffixUrl)
@@ -74,7 +75,8 @@ export async function fetchReversedSearchResult(userEntry, onResultsFound) {
               FILTER(REGEX(?comment,"` +
 			userEntry +
 			`","i")).
-            }
+			}
+			GROUP BY ?dId ?mId ?label ?comment
             ORDER BY ?dId ?mId`;
 		let encodedQuery = encodeURIComponent(query);
 		fetch(requestUrl + encodedQuery + suffixUrl)
