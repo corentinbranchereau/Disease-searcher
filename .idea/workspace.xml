@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8e6f85be-82ee-411b-b3fe-d251ba782ada" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Pull.Settings">
+    <option name="BRANCH" value="search-component" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsBowerSettings">
+    <node-interpreter value="project" />
+    <bower-package value="" />
+    <bower.json value="" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="PackageJsonUpdateNotifier">
+    <dismissed value="$PROJECT_DIR$/package.json" />
+  </component>
+  <component name="ProjectId" id="1jufMQVPCFtMBfTNwoGKWOixiiI" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/node_modules/prettier" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="prettier.files.pattern" value="{**/*,*}.{js,ts,jsx,tsx,css,scss,sass}" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
+    <property name="run.prettier.on.save" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8e6f85be-82ee-411b-b3fe-d251ba782ada" name="Default Changelist" comment="" />
+      <created>1604658848913</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1604658848913</updated>
+      <workItem from="1604658850176" duration="1487000" />
+      <workItem from="1604735919848" duration="1526000" />
+      <workItem from="1604737853795" duration="16162000" />
+      <workItem from="1604851248262" duration="2704000" />
+    </task>
+    <task id="LOCAL-00001" summary="branch">
+      <created>1604659346544</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1604659346544</updated>
+    </task>
+    <task id="LOCAL-00002" summary="add sliders">
+      <created>1604747640381</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1604747640381</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Try result list">
+      <created>1604756494192</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1604756494192</updated>
+    </task>
+    <task id="LOCAL-00004" summary="li:before">
+      <created>1604757893396</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1604757893396</updated>
+    </task>
+    <task id="LOCAL-00005" summary="li background">
+      <created>1604758622333</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1604758622333</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Fix dbo:disease and goes for yago:disease instead">
+      <created>1604852978823</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1604852978823</updated>
+    </task>
+    <task id="LOCAL-00007" summary="handle click on logo">
+      <created>1604854028985</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1604854028985</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="branch" />
+    <MESSAGE value="add sliders" />
+    <MESSAGE value="Try result list" />
+    <MESSAGE value="li:before" />
+    <MESSAGE value="li background" />
+    <MESSAGE value="weird commit" />
+    <MESSAGE value="Fix dbo:disease and goes for yago:disease instead" />
+    <MESSAGE value="handle click on logo" />
+    <option name="LAST_COMMIT_MESSAGE" value="handle click on logo" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="499" y="88" width="912" height="993" key="CommitChangelistDialog2" timestamp="1604854026406">
+      <screen x="0" y="134" width="1920" height="946" />
+    </state>
+    <state x="499" y="88" width="912" height="911" key="CommitChangelistDialog2/1920.107.1920.1080/0.134.1920.946@0.134.1920.946" timestamp="1604854026406" />
+    <state x="2419" y="134" width="912" height="993" key="CommitChangelistDialog2/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604851373662" />
+    <state x="182" y="204" width="1536" height="901" key="DiffContextDialog" timestamp="1604854016514">
+      <screen x="0" y="134" width="1920" height="946" />
+    </state>
+    <state x="182" y="204" key="DiffContextDialog/1920.107.1920.1080/0.134.1920.946@0.134.1920.946" timestamp="1604854016514" />
+    <state x="2102" y="187" width="1536" height="901" key="DiffContextDialog/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604758542189" />
+    <state x="743" y="301" width="424" height="491" key="FileChooserDialogImpl" timestamp="1604659588856">
+      <screen x="0" y="134" width="1920" height="946" />
+    </state>
+    <state x="743" y="301" width="424" height="491" key="FileChooserDialogImpl/1920.107.1920.1080/0.134.1920.946@0.134.1920.946" timestamp="1604659588856" />
+    <state width="1897" height="255" key="GridCell.Tab.0.bottom" timestamp="1604854115421">
+      <screen x="0" y="134" width="1920" height="946" />
+    </state>
+    <state width="1897" height="255" key="GridCell.Tab.0.bottom/1920.107.1920.1080/0.134.1920.946@0.134.1920.946" timestamp="1604854115421" />
+    <state width="1897" height="255" key="GridCell.Tab.0.bottom/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604851484581" />
+    <state width="1897" height="255" key="GridCell.Tab.0.center" timestamp="1604854115421">
+      <screen x="0" y="134" width="1920" height="946" />
+    </state>
+    <state width="1897" height="255" key="GridCell.Tab.0.center/1920.107.1920.1080/0.134.1920.946@0.134.1920.946" timestamp="1604854115421" />
+    <state width="1897" height="255" key="GridCell.Tab.0.center/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604851484580" />
+    <state width="1897" height="255" key="GridCell.Tab.0.left" timestamp="1604854115421">
+      <screen x="0" y="134" width="1920" height="946" />
+    </state>
+    <state width="1897" height="255" key="GridCell.Tab.0.left/1920.107.1920.1080/0.134.1920.946@0.134.1920.946" timestamp="1604854115421" />
+    <state width="1897" height="255" key="GridCell.Tab.0.left/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604851484580" />
+    <state width="1897" height="255" key="GridCell.Tab.0.right" timestamp="1604854115421">
+      <screen x="0" y="134" width="1920" height="946" />
+    </state>
+    <state width="1897" height="255" key="GridCell.Tab.0.right/1920.107.1920.1080/0.134.1920.946@0.134.1920.946" timestamp="1604854115421" />
+    <state width="1897" height="255" key="GridCell.Tab.0.right/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604851484580" />
+    <state x="2059" y="393" width="1180" height="482" key="MultipleFileMergeDialog" timestamp="1604851318768">
+      <screen x="1920" y="107" width="1920" height="1080" />
+    </state>
+    <state x="2059" y="393" width="1180" height="482" key="MultipleFileMergeDialog/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604851318768" />
+    <state x="2369" y="154" width="1022" height="737" key="SettingsEditor" timestamp="1604737831914">
+      <screen x="1920" y="107" width="1920" height="1080" />
+    </state>
+    <state x="449" y="175" width="1022" height="737" key="SettingsEditor/1920.107.1920.1080/0.134.1920.946@0.134.1920.946" timestamp="1604659640857" />
+    <state x="2369" y="154" key="SettingsEditor/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604737831914" />
+    <state x="555" y="276" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1604854030589">
+      <screen x="0" y="134" width="1920" height="946" />
+    </state>
+    <state x="555" y="276" width="800" height="535" key="Vcs.Push.Dialog.v2/1920.107.1920.1080/0.134.1920.946@0.134.1920.946" timestamp="1604854030589" />
+    <state x="2475" y="269" width="800" height="535" key="Vcs.Push.Dialog.v2/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604851329592" />
+    <state x="2020" y="234" width="1720" height="793" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1604851635042">
+      <screen x="1920" y="107" width="1920" height="1080" />
+    </state>
+    <state x="2020" y="234" width="1720" height="793" key="com.intellij.history.integration.ui.views.FileHistoryDialog/1920.107.1920.1080/0.134.1920.946@1920.107.1920.1080" timestamp="1604851635042" />
+  </component>
+</project>
